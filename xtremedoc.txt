@@ -1,0 +1,79 @@
+Xtreme Gaming Lounge Management Software - Prompt for Augment
+
+---
+
+## **Project Overview:**
+We are developing an **Internet Café & Gaming Lounge Management System**, similar to TrueCafe, but with additional custom features. The software should handle **client login (prepaid & postpaid), payments, POS, PC grouping, remote control, analytics, cloud data management, security, and staff/admin functionalities**.
+
+---
+
+## **Tech Stack:**
+- **Electron.js** → Desktop client for Admin & Terminals
+- **PocketBase** → Backend & Database
+- **Vite + React** → Frontend UI from `electron-vite` project
+
+---
+
+## **Features to Implement:**
+
+### **1. User Management**
+- **Admin & Staff Logins** (Admin has full access, staff has restricted access)
+- **Client Login** (Prepaid, Postpaid, and Guest modes)
+- **Prepaid Balance & Recharges**
+- **Discounts with Notes & Logs**
+- **Automatic Session Merging**
+
+---
+
+### **2. POS & Inventory Management**
+- **Add/Remove Products** (e.g., snacks, drinks, accessories)
+- **Track Stock Levels & Alerts**
+- **Logs for Lost/Stolen Items**
+- **Selling Price & Cost Price Management**
+- **Two Inventory Logs** (Main Stock + Fridge Stock)
+- **Export Data to Excel**
+
+---
+
+### **3. Pricing & Sessions**
+- **Dynamic Pricing per PC Group**
+- **Session Billing System** (Round-off & Minimum Billing ₹70)
+- **Recharge Wallet with Time-based Pricing**
+
+---
+
+### **4. Remote Access & Terminal Control**
+- **Restart / Shutdown PCs from Admin Panel**
+- **Screen Capture to Monitor Client PCs**
+- **Auto Logout & Session Lock for Idle Terminals**
+
+---
+
+### **5. Sales Reports & Logs**
+- **Daily Reports (PC & Console Usage, Cold Drink Sales, Revenue)**
+- **Audit Trail for Transactions & Edited Data**
+- **Logs to Track Staff Actions**
+
+---
+
+### **6. Cloud & Backup System**
+- **Cloud Database for Multi-location Café Support**
+- **Daily Auto Backup & Restore Functionality**
+
+---
+
+### **7. License & Security Features**
+- **Admin-Generated Activation Keys for Software Licensing**
+- **Key Binding to Device/User to Prevent Unauthorized Sharing**
+- **Auto Expiry & Renewal System**
+
+---
+
+## **Next Action:**
+Continue coding the **backend APIs, WebSocket updates, and Electron integration**. Prioritize **client login, pricing system, remote control, and POS features** first before refining the UI.
+
+---
+
+This document ensures Augment knows exactly what to build next. 🚀🔥
+
+
