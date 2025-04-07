@@ -7,6 +7,7 @@ import Bookings from './pages/bookings/page'
 import CustomersPage from './pages/settings/customer/page'
 import MainRootLayout from './layout'
 import AddSession from './pages/bookings/add/[device]/page'
+import UsersPage from './pages/(app)/users/Users'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,6 +18,14 @@ createRoot(document.getElementById('root')).render(
           element={
             <MainRootLayout>
               <InventoryPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/users'
+          element={
+            <MainRootLayout>
+              <UsersPage />
             </MainRootLayout>
           }
         />

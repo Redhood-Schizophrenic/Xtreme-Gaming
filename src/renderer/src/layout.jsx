@@ -1,8 +1,7 @@
 import { ThemeProvider } from "@renderer/components/ui/theme-provider";
-import { SidebarProvider } from "@renderer/components/ui/sidebar"
-import { AppSidebar } from "@renderer/components/layout/Sidebar";
 import AppHeader from "@renderer/components/layout/Header";
 import { Toaster } from "@renderer/components/ui/sonner";
+// import { ProtectedRoute } from "./lib/utils/ProtectedRoute";
 
 export default function MainRootLayout({ children }) {
   return (
@@ -12,14 +11,11 @@ export default function MainRootLayout({ children }) {
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="w-full">
-          <AppHeader />
-          {children}
-          <Toaster />
-        </main>
-      </SidebarProvider>
+      <main className="w-full">
+        <AppHeader />
+        {children}
+        <Toaster />
+      </main>
     </ThemeProvider>
   )
 }
