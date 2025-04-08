@@ -39,7 +39,7 @@ const columns = [
     cell: ({ row }) => format(new Date(row.getValue("created")), 'MMM dd, yyyy'),
   },
   {
-    accessorKey: "username",
+    accessorKey: "expand.user.username",
     header: ({ column }) => {
       return (
         <Button
@@ -51,22 +51,32 @@ const columns = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className='ml-2'>{row.getValue("username")}</div>,
+    cell: ({ row }) => <div className='ml-2'>{row.original.expand?.user.username}</div>,
   },
   {
-    accessorKey: "name",
+    accessorKey: "expand.user.name",
     header: 'Name',
-    cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    cell: ({ row }) => <div>{row.original.expand?.user.name}</div>,
   },
   {
-    accessorKey: "email",
+    accessorKey: "contact",
+    header: 'Contact',
+    cell: ({ row }) => <div>+91 {row.getValue("contact")}</div>,
+  },
+  {
+    accessorKey: "expand.user.email",
     header: 'Email',
-    cell: ({ row }) => <div>{row.getValue("email")}</div>,
+    cell: ({ row }) => <div>{row.original.expand?.user.email}</div>,
   },
   {
-    accessorKey: "role",
-    header: 'Role',
-    cell: ({ row }) => <div>{row.getValue("role")}</div>,
+    accessorKey: "type",
+    header: 'Type',
+    cell: ({ row }) => <div>{row.getValue("type")}</div>,
+  },
+  {
+    accessorKey: "membership",
+    header: 'Membership',
+    cell: ({ row }) => <div>{row.getValue("membership")}</div>,
   },
   {
     id: "actions",
@@ -93,7 +103,7 @@ const columns = [
   },
 ]
 
-export default function StaffTable({ data }) {
+export default function CustomerTable({ data }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});

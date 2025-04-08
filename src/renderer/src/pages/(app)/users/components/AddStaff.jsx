@@ -8,7 +8,7 @@ import { useCollection } from '@renderer/hooks/pbCollection';
 import { toast } from "sonner";
 
 
-export default function AddAdmin() {
+export default function AddStaff() {
   const { createItem } = useCollection('users');
 
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ export default function AddAdmin() {
     emailVisibility: true,
     password: '',
     passwordConfirm: '',
-    role: 'Admin',
+    role: 'Staff',
   });
   const [displayPassword, setDisplayPassword] = useState(false);
   const [displayConfirmPassword, setDisplayConfirmPassword] = useState(false);
@@ -31,7 +31,7 @@ export default function AddAdmin() {
       }
       const result = await createItem(formData);
       console.log(result);
-      await window.api.notify('Success', 'Admin account created successfully!!!');
+      await window.api.notify('Success', 'Staff account created successfully!!!');
     } catch (error) {
       await window.api.notify('Error', 'Error creating account, please try again later....');
     } finally {
@@ -48,7 +48,7 @@ export default function AddAdmin() {
 
   return (
     <section className='p-10'>
-      <h1 className='text-2xl font-bold'>Create New Admin</h1>
+      <h1 className='text-2xl font-bold'>Create New Staff</h1>
       <form className='grid gap-4 pt-10'>
         <div className="space-y-4">
           <Label>Username</Label>
@@ -135,7 +135,7 @@ export default function AddAdmin() {
             className='w-full'
             onClick={onSubmit}
           >
-            Create Admin
+            Create Staff
           </Button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../api/auth';
+import { useCollection } from '@renderer/hooks/pbCollection';
 
 
 // Create the auth context
@@ -7,6 +8,9 @@ const AuthContext = createContext();
 
 // Auth provider component
 export function AuthProvider({ children }) {
+  const { data: LoginLogs, createItem: addLoginLogs, updateItem: editLoginLogs } = useCollection('login_logs', {
+    sort: '-created'
+  });
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +28,10 @@ export function AuthProvider({ children }) {
       setLoading(true);
       setError(null);
       const authData = await authService.login(username, password);
+      await addLoginLogs({
+        user: authData.record.id,
+        login: new Date().toISOString(),
+      });
       setCurrentUser(authData.record);
       return authData.record;
     } catch (err) {
@@ -52,6 +60,12 @@ export function AuthProvider({ children }) {
   // Logout function
   const logout = () => {
     authService.logout();
+    const FoundLog = LoginLogs.find((log) => log?.user === currentUser?.id);
+    if (FoundLog?.id) {
+      editLoginLogs(FoundLog.id, {
+        logout: new Date().toISOString(),
+      });
+    }
     setCurrentUser(null);
   };
 

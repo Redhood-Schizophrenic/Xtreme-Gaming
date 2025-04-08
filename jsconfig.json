@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@main/*": [
+        "src/main/*"
+      ],
+      "@preload/*": [
+        "src/preload/*"
+      ],
+      "@renderer/*": [
+        "src/renderer/src/*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

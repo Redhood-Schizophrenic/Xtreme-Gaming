@@ -10,6 +10,8 @@ import AddSession from './pages/bookings/add/[device]/page'
 import UsersPage from './pages/(app)/users/Users'
 import AddAdmin from './pages/(app)/users/components/AddAdmin'
 import Login from './pages/(auth)/login/Login'
+import AddStaff from './pages/(app)/users/components/AddStaff'
+import AddCustomer from './pages/(app)/users/components/AddCustomer'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -81,6 +83,22 @@ createRoot(document.getElementById('root')).render(
           element={
             <ThemedLayout>
               <AddAdmin />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path='/staff_add_dialog'
+          element={
+            <ThemedLayout>
+              <AddStaff />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path='/customer_add_dialog'
+          element={
+            <ThemedLayout>
+              <AddCustomer />
             </ThemedLayout>
           }
         />

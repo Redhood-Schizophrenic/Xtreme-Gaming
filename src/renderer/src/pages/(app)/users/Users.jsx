@@ -6,16 +6,23 @@ import { Card, CardContent, CardHeader } from "@renderer/components/ui/card";
 import { Button } from "@renderer/components/ui/button";
 import { PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import CustomerTable from './components/CustomerTable';
 
 export default function UsersPage() {
   const { data: users } = useCollection('users');
+  const { data: customers } = useCollection('customers', {
+    expand: 'user'
+  });
+  console.log('Customers', customers[0].expand.user.name);
+
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedData, setSelectedData] = useState('Admins')
+
   useEffect(() => {
     if (selectedData === 'Admins') {
       setFilteredUsers(users?.filter((user) => user?.role === 'Admin'));
     } else if (selectedData === 'Staffs') {
-      setFilteredUsers(users?.filter((user) => user?.role === 'Staffs'));
+      setFilteredUsers(users?.filter((user) => user?.role === 'Staff'));
     } else if (selectedData === 'Customers') {
       setFilteredUsers(users?.filter((user) => user?.role === 'User'));
     }
@@ -46,12 +53,32 @@ export default function UsersPage() {
                   <p>Add</p>
                   <PlusIcon />
                 </Button>
-              ) : ''
+              ) : (
+                selectedData === 'Staffs' ? (
+                  <Button onClick={() => handleDialog('staff_add_dialog')}>
+                    <p>Add</p>
+                    <PlusIcon />
+                  </Button>
+                ) : (
+                  selectedData === 'Customers' ? (
+                    <Button onClick={() => handleDialog('customer_add_dialog')}>
+                      <p>Add</p>
+                      <PlusIcon />
+                    </Button>
+                  ) : ''
+                )
+              )
             }
           </div>
         </CardHeader>
         <CardContent>
-          <StaffTable data={filteredUsers} />
+          {
+            selectedData === 'Customers' ? (
+              <CustomerTable data={customers} />
+            ) : (
+              <StaffTable data={filteredUsers} />
+            )
+          }
         </CardContent>
       </Card>
     </main>
