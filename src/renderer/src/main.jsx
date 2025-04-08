@@ -5,13 +5,16 @@ import './index.css'
 import InventoryPage from './pages/inventory/page'
 import Bookings from './pages/bookings/page'
 import CustomersPage from './pages/settings/customer/page'
-import MainRootLayout from './layout'
+import MainRootLayout, { ThemedLayout } from './layout'
 import AddSession from './pages/bookings/add/[device]/page'
 import UsersPage from './pages/(app)/users/Users'
+import AddAdmin from './pages/(app)/users/components/AddAdmin'
+import Login from './pages/(auth)/login/Login'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Router>
+      {/* App */}
       <Routes>
         <Route
           path='/'
@@ -59,6 +62,26 @@ createRoot(document.getElementById('root')).render(
             <MainRootLayout>
               <CustomersPage />
             </MainRootLayout>
+          }
+        />
+
+        {/* Auth */}
+        <Route
+          path='/login'
+          element={
+            <ThemedLayout>
+              <Login />
+            </ThemedLayout>
+          }
+        />
+
+        {/* Modal Pages */}
+        <Route
+          path='/admin_add_dialog'
+          element={
+            <ThemedLayout>
+              <AddAdmin />
+            </ThemedLayout>
           }
         />
       </Routes>

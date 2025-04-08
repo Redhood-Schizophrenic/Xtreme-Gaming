@@ -9,7 +9,6 @@ function createWindow() {
     width: 900,
     height: 670,
     show: false,
-    autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -66,7 +65,44 @@ app.whenReady().then(() => {
       console.error('Notification error:', error);
       return false;
     }
-  })
+  });
+
+  // IPC for custom dialog box
+  ipcMain.handle('custom-dialog', (_, { page }) => {
+    const dialogWindow = new BrowserWindow({
+      width: 600,
+      height: 400,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      parent: BrowserWindow.getAllWindows(),
+      modal: true,
+      show: false,
+      webPreferences: {
+        preload: join(__dirname, '../preload/index.js'),
+        sandbox: false
+      }
+    });
+    dialogWindow.removeMenu();
+    // Load the remote URL for development or the local html file for production.
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+      dialogWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/${page}`)
+    } else {
+      dialogWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    }
+    dialogWindow.once('ready-to-show', () => {
+      dialogWindow.show()
+    });
+
+    return new Promise((resolve) => {
+      // On Close event
+      ipcMain.handle('custom-dialog-close', () => {
+        dialogWindow.close();
+        dialogWindow = null;
+        resolve({ success: true })
+      });
+    });
+  });
 
   createWindow()
 

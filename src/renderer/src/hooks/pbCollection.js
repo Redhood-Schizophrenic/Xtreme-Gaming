@@ -24,13 +24,7 @@ export function useCollection(collectionName, options) {
     }
   };
 
-  const mutate = useCallback(async (newData) => {
-    if (newData) {
-      // If new data is provided, update the state directly
-      setData(newData);
-      return;
-    }
-    // Otherwise, fetch fresh data from the server
+  const mutate = useCallback(async () => {
     await fetchData();
   }, [collectionName, options]);
 
@@ -70,8 +64,9 @@ export function useCollection(collectionName, options) {
   };
 
   useEffect(() => {
+    fetchData();
     pb.collection(collectionName).subscribe('*', function(e) {
-      fetchData();
+      mutate();
     });
   }, [collectionName, JSON.stringify(options)]);
 

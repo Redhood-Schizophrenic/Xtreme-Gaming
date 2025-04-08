@@ -10,7 +10,7 @@ const authService = {
    */
   async login(username, password) {
     try {
-      const authData = await pb.collection('xtreme_users').authWithPassword(username, password);
+      const authData = await pb.collection('users').authWithPassword(username, password);
       return authData;
     } catch (error) {
       throw handleApiError(error);
@@ -24,7 +24,7 @@ const authService = {
    */
   async register(userData) {
     try {
-      const user = await pb.collection('xtreme_users').create(userData);
+      const user = await pb.collection('users').create(userData);
       return user;
     } catch (error) {
       throw handleApiError(error);
@@ -62,7 +62,7 @@ const authService = {
    */
   async updateProfile(userId, userData) {
     try {
-      const user = await pb.collection('xtreme_users').update(userId, userData);
+      const user = await pb.collection('users').update(userId, userData);
       return user;
     } catch (error) {
       throw handleApiError(error);
@@ -78,14 +78,8 @@ const authService = {
    */
   async changePassword(userId, currentPassword, newPassword) {
     try {
-      // First verify the current password
-      await pb.collection('xtreme_users').authWithPassword(
-        pb.authStore.model.username,
-        currentPassword
-      );
-
-      // Then update the password
-      const user = await pb.collection('xtreme_users').update(userId, {
+      // pdate the password
+      const user = await pb.collection('users').update(userId, {
         password: newPassword,
         passwordConfirm: newPassword
       });

@@ -24,6 +24,7 @@ import {
 } from "@renderer/components/ui/dropdown-menu";
 import { Button } from "@renderer/components/ui/button";
 import React from 'react';
+import { useAuth } from "@renderer/contexts/AuthContext";
 
 export default function ProfileIcon() {
   const user = {
@@ -31,6 +32,11 @@ export default function ProfileIcon() {
     email: "user@rendererexample.com",
     avatar: "/avatars/shadcn.jpg",
   };
+
+  const { logout } = useAuth();
+  const handleLogout = async () => {
+    await logout();
+  }
 
   return (
     <div>
@@ -42,7 +48,6 @@ export default function ProfileIcon() {
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback className="rounded-full">U</AvatarFallback>
             </Avatar>
             <ChevronDown className="size-4" />
@@ -67,29 +72,7 @@ export default function ProfileIcon() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Sparkles />
-              Upgrade to Pro
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <BadgeCheck />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <CreditCard />
-              Billing
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Bell />
-              Notifications
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>
             <LogOut />
             Log out
           </DropdownMenuItem>

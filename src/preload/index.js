@@ -3,7 +3,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  notify: (title, body) => ipcRenderer.invoke('show-notification', { title, body })
+  notify: (title, body) => ipcRenderer.invoke('show-notification', { title, body }),
+  customDialog: (page) => ipcRenderer.invoke('custom-dialog', { page }),
+  customDialogClose: () => ipcRenderer.invoke('custom-dialog-close'),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

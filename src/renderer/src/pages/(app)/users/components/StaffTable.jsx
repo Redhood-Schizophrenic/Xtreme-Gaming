@@ -29,9 +29,15 @@ import {
   TableHeader,
   TableRow,
 } from "@renderer/components/ui/table"
+import { format } from "date-fns";
 import { PDFExport } from "@renderer/components/supporting/Table2PDF"
 
 const columns = [
+  {
+    accessorKey: "created",
+    header: "Joined On",
+    cell: ({ row }) => format(new Date(row.getValue("created")), 'MMM dd, yyyy'),
+  },
   {
     accessorKey: "username",
     header: ({ column }) => {
@@ -40,7 +46,7 @@ const columns = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          UserName
+          Username
           <ArrowUpDown />
         </Button>
       )
@@ -48,34 +54,23 @@ const columns = [
     cell: ({ row }) => <div className='ml-2'>{row.getValue("username")}</div>,
   },
   {
-    accessorKey: "name",
-    header: () => {
-      return (
-        <p>
-          Name
-        </p>
-      )
-    },
-    cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    accessorKey: "email",
+    header: 'Email',
+    cell: ({ row }) => <div>{row.getValue("email")}</div>,
   },
   {
     accessorKey: "role",
-    header: () => {
-      return (
-        <p>
-          Role
-        </p>
-      )
-    },
+    header: 'Role',
     cell: ({ row }) => <div>{row.getValue("role")}</div>,
   },
   {
     id: "actions",
-    enableHiding: false,
+    accessorKey: "",
+    header: "Actions",
     cell: ({ row }) => {
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal />
@@ -122,10 +117,10 @@ export default function StaffTable({ data }) {
     <div className="w-full">
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue()) ?? ""}
+          placeholder="Filter by Username..."
+          value={(table.getColumn("username")?.getFilterValue()) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("username")?.setFilterValue(event.target.value)
           }
           className="max-w-sm w-full"
         />
@@ -137,7 +132,7 @@ export default function StaffTable({ data }) {
             title="Devices List"
           />
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button variant="outline" className="ml-auto">
                 Columns <ChevronDown />
               </Button>
