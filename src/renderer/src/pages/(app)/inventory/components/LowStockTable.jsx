@@ -53,17 +53,19 @@ const columns = [
     cell: ({ row }) => <div>{row.getValue("type")}</div>,
   },
   {
-    accessorKey: "quantity",
-    header: 'Quantity',
-    cell: ({ row }) => <div>{row.getValue("quantity")}</div>,
+    accessorKey: "location",
+    header: 'Located At',
+    cell: ({ row }) => <div>{row.getValue("location")}</div>,
   },
   {
-    accessorKey: "selling_price_per",
-    header: () => <div>Price</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("selling_price_per"))
-      return <div className="font-medium">{"Rs. " + amount}</div>
-    },
+    accessorKey: "quantity",
+    header: 'Quantity',
+    cell: ({ row }) => <div>{row.getValue("quantity").toLocaleString()}</div>,
+  },
+  {
+    accessorKey: "selling_price",
+    header: 'Price',
+    cell: ({ row }) => <div className="font-medium">Rs. {row.getValue("selling_price").toLocaleString()} each</div>,
   },
   {
     accessorKey: "status",
@@ -78,28 +80,6 @@ const columns = [
         {row.getValue("status")}
       </div>
     ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log(row)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem className={'text-red-500'}>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
   },
 ]
 
@@ -131,7 +111,7 @@ function LowStockTable({ data = [] }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter consumable..."
           value={(table.getColumn("name")?.getFilterValue()) ?? ""}
@@ -140,38 +120,40 @@ function LowStockTable({ data = [] }) {
           }
           className="max-w-sm"
         />
-        <PDFExport
-          data={data}
-          columns={columns}
-          fileName="Low_Stock.pdf"
-          title="Low Stock List"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-4">
+          <PDFExport
+            data={data}
+            columns={columns}
+            fileName="Low_Stock.pdf"
+            title="Low Stock List"
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

@@ -24,6 +24,7 @@ function StatsCard({ stat, setData }) {
 }
 
 function Stats({ snacks, devices, setData }) {
+  console.log(snacks)
   const [StatsData, setStatsData] = useState([
     {
       title: 'Devices',

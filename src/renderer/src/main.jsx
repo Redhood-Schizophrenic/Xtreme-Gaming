@@ -20,6 +20,8 @@ import EditStaff from './pages/(app)/users/components/EditStaff'
 import EditCustomer from './pages/(app)/users/components/EditCustomer'
 import AddDevice from './pages/(app)/inventory/components/AddDevice'
 import EditDevice from './pages/(app)/inventory/components/EditDevice'
+import AddSnack from './pages/(app)/inventory/components/AddSnacks'
+import EditSnack from './pages/(app)/inventory/components/EditSnacks'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -134,6 +136,14 @@ createRoot(document.getElementById('root')).render(
             </ThemedLayout>
           }
         />
+        <Route
+          path='/snack_add_dialog'
+          element={
+            <ThemedLayout>
+              <AddSnack />
+            </ThemedLayout>
+          }
+        />
 
         {/* Edit Modal Pages */}
         <Route
@@ -173,6 +183,14 @@ createRoot(document.getElementById('root')).render(
           element={
             <ThemedLayout>
               <EditDevice />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path='/snack_edit_dialog/:snack_id'
+          element={
+            <ThemedLayout>
+              <EditSnack />
             </ThemedLayout>
           }
         />

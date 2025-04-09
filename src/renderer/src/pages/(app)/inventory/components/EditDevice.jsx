@@ -34,16 +34,16 @@ export default function EditDevice() {
     const loadDeviceData = async () => {
       try {
         setIsLoading(true);
-        const device = Devices.find((device) => device.id === device_id)
-        if (device) {
+        const deviceInfo = Devices.find((device) => device.id === device_id)
+        if (deviceInfo) {
           setFormData({
-            name: device.name || '',
-            type: device.type || 'PC',
-            group: device.group || '',
-            mac_address: device.mac_address || '',
-            ip_address: device.ip_address || '',
-            rules: device.rules || [],
-            status: device.status || 'Available'
+            name: deviceInfo.name || '',
+            type: deviceInfo.type || 'PC',
+            group: deviceInfo.group || '',
+            mac_address: deviceInfo.mac_address || '',
+            ip_address: deviceInfo.ip_address || '',
+            rules: deviceInfo.rules || [],
+            status: deviceInfo.status || 'Available'
           });
         }
       } catch (error) {
