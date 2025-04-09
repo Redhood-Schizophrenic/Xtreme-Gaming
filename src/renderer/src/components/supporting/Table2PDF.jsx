@@ -20,6 +20,8 @@ export function PDFExport({
     const exportColumns = columns.filter(column =>
       column.id !== 'actions' &&
       column.header !== 'Actions' &&
+      column.id !== 'rules' &&
+      column.header !== 'Rules' &&
       !column.exclude
     )
 

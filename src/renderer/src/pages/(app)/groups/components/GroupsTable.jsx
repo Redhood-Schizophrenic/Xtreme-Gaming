@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
   flexRender,
@@ -29,80 +27,104 @@ import {
   TableHeader,
   TableRow,
 } from "@renderer/components/ui/table"
-import { PDFExport } from "@renderer/components/supporting/Table2PDF"
+import { PDFExport } from "@renderer/components/supporting/Table2PDF";
+import { useCollection } from "@renderer/hooks/pbCollection"
 
-const columns = [
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className='ml-2'>{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: () => {
-      return (
-        <Button
-          variant="ghost"
-        >
-          Type
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div>{row.getValue("type")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className={`capitalize
-				${row.getValue("status") === 'Available' ? 'text-green-800 dark:text-green-500' : (
-          row.getValue("status") === 'Occupied' ? 'text-red-800 dark:text-red-500' :
-            'text-gray-800 dark:text-gray-500'
-        )}`}
-      >
-        {row.getValue("status")}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log(row)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem className={'text-red-500'}>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
-
-export default function DevicesTable({ data }) {
+export default function GroupsTable({ data }) {
+  const { deleteItem } = useCollection('groups');
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const columns = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className='ml-2'>{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "type",
+      header: 'Type',
+      cell: ({ row }) => {
+        const type = row.getValue("type") || '';
+        return (
+          <div>
+            {
+              type === 'PS' ? "Playstation" : (
+                type === 'PC' ? "PC Gaming" : (
+                  type === 'SIM' ? "Simulators" : (
+                    type === 'VR' ? "VR Gaming" : 'Not Defined'
+                  )
+                )
+              )
+            }
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "price",
+      header: "Price",
+      cell: ({ row }) => (
+        <div className=''>
+          Rs. {row.getValue('price').toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      accessorKey: "",
+      header: "Actions",
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={
+                  async () => {
+                    console.log(`group_edit_dialog/${row.original.id}`)
+                    await window.api.customDialog(`group_edit_dialog/${row.original.id}`);
+                  }
+                }
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={'text-red-500'}
+                onClick={async () => {
+                  const result = confirm('Are you sure you want to delete this group?');
+                  if (result) {
+                    await deleteItem(row.original.id);
+                  }
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ];
 
   const table = useReactTable({
     data,
@@ -121,7 +143,8 @@ export default function DevicesTable({ data }) {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
+
 
   return (
     <div className="w-full">
@@ -134,38 +157,40 @@ export default function DevicesTable({ data }) {
           }
           className="max-w-sm w-full"
         />
-        <PDFExport
-          data={data}
-          columns={columns}
-          fileName="Devices.pdf"
-          title="Devices List"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-4">
+          <PDFExport
+            data={data}
+            columns={columns}
+            fileName="Devices.pdf"
+            title="Devices List"
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

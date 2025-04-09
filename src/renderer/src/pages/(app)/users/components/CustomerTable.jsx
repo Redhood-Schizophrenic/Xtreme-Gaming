@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
   flexRender,
@@ -31,83 +29,106 @@ import {
 } from "@renderer/components/ui/table"
 import { format } from "date-fns";
 import { PDFExport } from "@renderer/components/supporting/Table2PDF"
-
-const columns = [
-  {
-    accessorKey: "created",
-    header: "Joined On",
-    cell: ({ row }) => format(new Date(row.getValue("created")), 'MMM dd, yyyy'),
-  },
-  {
-    accessorKey: "expand.user.username",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Username
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className='ml-2'>{row.original.expand?.user.username}</div>,
-  },
-  {
-    accessorKey: "expand.user.name",
-    header: 'Name',
-    cell: ({ row }) => <div>{row.original.expand?.user.name}</div>,
-  },
-  {
-    accessorKey: "contact",
-    header: 'Contact',
-    cell: ({ row }) => <div>+91 {row.getValue("contact")}</div>,
-  },
-  {
-    accessorKey: "expand.user.email",
-    header: 'Email',
-    cell: ({ row }) => <div>{row.original.expand?.user.email}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: 'Type',
-    cell: ({ row }) => <div>{row.getValue("type")}</div>,
-  },
-  {
-    accessorKey: "membership",
-    header: 'Membership',
-    cell: ({ row }) => <div>{row.getValue("membership")}</div>,
-  },
-  {
-    id: "actions",
-    accessorKey: "",
-    header: "Actions",
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log(row)}>Edit</DropdownMenuItem>
-            <DropdownMenuItem className={'text-red-500'}>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
+import { useCollection } from "@renderer/hooks/pbCollection"
 
 export default function CustomerTable({ data }) {
+  const { deleteItem } = useCollection('users');
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const columns = [
+    {
+      accessorKey: "created",
+      header: "Joined On",
+      cell: ({ row }) => format(new Date(row.getValue("created")), 'MMM dd, yyyy'),
+    },
+    {
+      accessorKey: "expand.user.username",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Username
+            <ArrowUpDown />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className='ml-2'>{row.original.expand?.user.username}</div>,
+    },
+    {
+      accessorKey: "expand.user.name",
+      header: 'Name',
+      cell: ({ row }) => <div>{row.original.expand?.user.name}</div>,
+    },
+    {
+      accessorKey: "contact",
+      header: 'Contact',
+      cell: ({ row }) => <div>+91 {row.getValue("contact")}</div>,
+    },
+    {
+      accessorKey: "expand.user.email",
+      header: 'Email',
+      cell: ({ row }) => <div>{row.original.expand?.user.email}</div>,
+    },
+    {
+      accessorKey: "wallet",
+      header: 'Wallet',
+      cell: ({ row }) => <div>{row.original.wallet.toLocaleString()}</div>,
+    },
+    {
+      accessorKey: "type",
+      header: 'Type',
+      cell: ({ row }) => <div>{row.getValue("type")}</div>,
+    },
+    {
+      accessorKey: "membership",
+      header: 'Membership',
+      cell: ({ row }) => <div>{row.getValue("membership")}</div>,
+    },
+    {
+      id: "actions",
+      accessorKey: "",
+      header: "Actions",
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={async () => {
+                  await window.api.customDialog(`customer_edit_dialog/${row.original.user}`);
+                }}
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={'text-red-500'}
+                onClick={async () => {
+                  const result = confirm('Are you sure you want to delete this user?');
+                  if (result) {
+                    await deleteItem(row.original.id);
+                  }
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
 
   const table = useReactTable({
     data,

@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import {
   flexRender,
@@ -27,12 +29,12 @@ import {
   TableHeader,
   TableRow,
 } from "@renderer/components/ui/table"
-import { format } from "date-fns";
 import { PDFExport } from "@renderer/components/supporting/Table2PDF"
+import { Badge } from "@renderer/components/ui/badge"
 import { useCollection } from "@renderer/hooks/pbCollection"
 
-export default function StaffTable({ data }) {
-  const { deleteItem } = useCollection('users');
+export default function DevicesTable({ data }) {
+  const { deleteItem } = useCollection('devices');
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -40,44 +42,83 @@ export default function StaffTable({ data }) {
 
   const columns = [
     {
-      accessorKey: "created",
-      header: "Joined On",
-      cell: ({ row }) => format(new Date(row.getValue("created")), 'MMM dd, yyyy'),
-    },
-    {
-      accessorKey: "username",
+      accessorKey: "name",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Username
+            Name
             <ArrowUpDown />
           </Button>
         )
       },
-      cell: ({ row }) => <div className='ml-2'>{row.getValue("username")}</div>,
+      cell: ({ row }) => <div className='ml-2'>{row.getValue("name")}</div>,
     },
     {
-      accessorKey: "name",
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+      accessorKey: "expand.group.name",
+      header: 'Group',
+      cell: ({ row }) => <div>{row.original.expand?.group.name}</div>,
     },
     {
-      accessorKey: "email",
-      header: 'Email',
-      cell: ({ row }) => <div>{row.getValue("email")}</div>,
+      accessorKey: "type",
+      header: 'Type',
+      cell: ({ row }) => {
+        const type = row.getValue("type") || '';
+        return (
+          <div>
+            {
+              type === 'PS' ? "Playstation" : (
+                type === 'PC' ? "PC Gaming" : (
+                  type === 'SIM' ? "Simulators" : (
+                    type === 'VR' ? "VR Gaming" : 'Not Defined'
+                  )
+                )
+              )
+            }
+          </div>
+        )
+      },
     },
     {
-      accessorKey: "role",
-      header: 'Role',
-      cell: ({ row }) => <div>{row.getValue("role")}</div>,
+      accessorKey: "mac_address",
+      header: 'MAC Address',
+      cell: ({ row }) => <div>{row.getValue("mac_address")}</div>,
+    },
+    {
+      accessorKey: "ip_address",
+      header: 'IP Address',
+      cell: ({ row }) => <div>{row.getValue("ip_address")}</div>,
+    },
+    {
+      accessorKey: "rules",
+      header: 'Rules',
+      cell: ({ row }) => (
+        <div className="grid grid-cols-2 items-center gap-1 ">
+          {row.original.rules?.map((rule, index) => (
+            <Badge key={index} variant={'outline'} className={'w-full'}>{rule}</Badge>
+          ))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <div className={`capitalize
+				${row.getValue("status") === 'Available' ? 'text-green-800 dark:text-green-500' : (
+            row.getValue("status") === 'Occupied' ? 'text-red-800 dark:text-red-500' :
+              'text-gray-800 dark:text-gray-500'
+          )}`}
+        >
+          {row.getValue("status")}
+        </div>
+      ),
     },
     {
       id: "actions",
-      accessorKey: "",
-      header: "Actions",
+      enableHiding: false,
       cell: ({ row }) => {
         return (
           <DropdownMenu>
@@ -90,18 +131,23 @@ export default function StaffTable({ data }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleEdit(row.original)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={
+                  async () => {
+                    console.log(`/device_edit_dialog/${row.original.id}`)
+                    await window.api.customDialog(`device_edit_dialog/${row.original.id}`)
+                  }
+                }
+              >Edit</DropdownMenuItem>
               <DropdownMenuItem
                 className={'text-red-500'}
                 onClick={async () => {
-                  const result = confirm('Are you sure you want to delete this user?');
+                  const result = confirm('Are you sure you want to delete this device?');
                   if (result) {
                     await deleteItem(row.original.id);
                   }
                 }}
-              >
-                Delete
-              </DropdownMenuItem>
+              >Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -128,23 +174,14 @@ export default function StaffTable({ data }) {
     },
   })
 
-  const handleEdit = async (user) => {
-    console.log(`admin_edit_dialog/${user.id}`);
-    if (user?.role === 'Admin') {
-      await window.api.customDialog(`admin_edit_dialog/${user.id}`);
-    } else if (user?.role === 'Staff') {
-      await window.api.customDialog(`staff_edit_dialog/${user.id}`);
-    }
-  }
-
   return (
     <div className="w-full">
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Filter by Username..."
-          value={(table.getColumn("username")?.getFilterValue()) ?? ""}
+          placeholder="Filter device..."
+          value={(table.getColumn("name")?.getFilterValue()) ?? ""}
           onChange={(event) =>
-            table.getColumn("username")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm w-full"
         />
@@ -156,7 +193,7 @@ export default function StaffTable({ data }) {
             title="Devices List"
           />
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 Columns <ChevronDown />
               </Button>

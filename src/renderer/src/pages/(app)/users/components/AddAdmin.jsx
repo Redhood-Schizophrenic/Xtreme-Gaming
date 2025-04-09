@@ -5,8 +5,6 @@ import { Input } from "@renderer/components/ui/input";
 import { Button } from "@renderer/components/ui/button";
 import { useState } from 'react';
 import { useCollection } from '@renderer/hooks/pbCollection';
-import { toast } from "sonner";
-
 
 export default function AddAdmin() {
   const { createItem } = useCollection('users');
@@ -26,9 +24,23 @@ export default function AddAdmin() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!formData.email || !formData.username || !formData.password || !formData.name) {
-        toast.warning('Please fill all the fields')
+      // Password validation - only if password field is not empty
+      if (formData.password) {
+        if (formData.password.length < 8) {
+          if (window.api) {
+            await window.api.notify('Error', 'Password must be at least 8 characters');
+          }
+          return;
+        }
+
+        if (formData.password !== formData.passwordConfirm) {
+          if (window.api) {
+            await window.api.notify('Error', 'Passwords do not match');
+          }
+          return;
+        }
       }
+
       const result = await createItem(formData);
       console.log(result);
       await window.api.notify('Success', 'Admin account created successfully!!!');

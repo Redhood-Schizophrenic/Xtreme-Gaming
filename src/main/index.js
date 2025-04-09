@@ -3,9 +3,13 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+
+let dialogWindow = null;
+let mainWindow = null;
+
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -14,7 +18,8 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
-  })
+  });
+
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -69,7 +74,12 @@ app.whenReady().then(() => {
 
   // IPC for custom dialog box
   ipcMain.handle('custom-dialog', (_, { page }) => {
-    const dialogWindow = new BrowserWindow({
+    if (dialogWindow) {
+      dialogWindow.focus();
+      return
+    }
+
+    dialogWindow = new BrowserWindow({
       width: 600,
       height: 400,
       resizable: false,
@@ -83,6 +93,7 @@ app.whenReady().then(() => {
         sandbox: false
       }
     });
+
     dialogWindow.removeMenu();
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

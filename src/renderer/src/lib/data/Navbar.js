@@ -1,4 +1,4 @@
-import { ChartNoAxesColumnDecreasing, ChartPie, HousePlus, Package, Users } from "lucide-react";
+import { ChartNoAxesColumnDecreasing, ChartPie, HousePlus, LayoutPanelTop, Package, Users } from "lucide-react";
 
 export const navLinks = [
   {
@@ -6,6 +6,12 @@ export const navLinks = [
     name: 'Home',
     href: '/',
     icon: HousePlus,
+  },
+  {
+    id: 'groups',
+    name: 'Grouping',
+    href: '/groups',
+    icon: LayoutPanelTop,
   },
   {
     id: 'inventory',

@@ -13,7 +13,6 @@ export default function UsersPage() {
   const { data: customers } = useCollection('customers', {
     expand: 'user'
   });
-  console.log('Customers', customers[0].expand.user.name);
 
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedData, setSelectedData] = useState('Admins')
