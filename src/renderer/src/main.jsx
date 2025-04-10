@@ -2,9 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from 'react-router'
 import './index.css'
+import DashboardPage from './pages/(app)/dashboard/page'
+import StaticDashboardPage from './pages/(app)/static-dashboard/page'
+import LogsPage from './pages/(app)/logs/page'
 import InventoryPage from './pages/(app)/inventory/page'
 import Bookings from './pages/bookings/page'
-import CustomersPage from './pages/settings/customer/page'
 import MainRootLayout, { ThemedLayout } from './layout'
 import AddSession from './pages/bookings/add/[device]/page'
 import UsersPage from './pages/(app)/users/Users'
@@ -12,16 +14,20 @@ import AddAdmin from './pages/(app)/users/components/AddAdmin'
 import Login from './pages/(auth)/login/Login'
 import AddStaff from './pages/(app)/users/components/AddStaff'
 import AddCustomer from './pages/(app)/users/components/AddCustomer'
-import GroupsPage from './pages/(app)/groups/page'
-import AddGroup from './pages/(app)/groups/components/AddGroup'
-import EditGroup from './pages/(app)/groups/components/EditGroup'
+import GroupsPage from './pages/(app)/settings/groups/page'
+import AddGroup from './pages/(app)/settings/groups/components/AddGroup'
+import EditGroup from './pages/(app)/settings/groups/components/EditGroup'
 import EditAdmin from './pages/(app)/users/components/EditAdmin'
 import EditStaff from './pages/(app)/users/components/EditStaff'
 import EditCustomer from './pages/(app)/users/components/EditCustomer'
-import AddDevice from './pages/(app)/inventory/components/AddDevice'
-import EditDevice from './pages/(app)/inventory/components/EditDevice'
+import AddDevice from './pages/(app)/settings/station/components/AddDevice'
+import EditDevice from './pages/(app)/settings/station/components/EditDevice'
 import AddSnack from './pages/(app)/inventory/components/AddSnacks'
 import EditSnack from './pages/(app)/inventory/components/EditSnacks'
+import SettingsPage from './pages/(app)/settings/page'
+import StationPage from './pages/(app)/settings/station/page'
+import BackupPage from './pages/(app)/settings/backup/page'
+import ReportsPage from './pages/(app)/reports/page'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -32,7 +38,31 @@ createRoot(document.getElementById('root')).render(
           path='/'
           element={
             <MainRootLayout>
-              <InventoryPage />
+              <DashboardPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/dashboard'
+          element={
+            <MainRootLayout>
+              <DashboardPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/static-dashboard'
+          element={
+            <MainRootLayout>
+              <StaticDashboardPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/logs'
+          element={
+            <MainRootLayout>
+              <LogsPage />
             </MainRootLayout>
           }
         />
@@ -61,14 +91,6 @@ createRoot(document.getElementById('root')).render(
           }
         />
         <Route
-          path='/groups'
-          element={
-            <MainRootLayout>
-              <GroupsPage />
-            </MainRootLayout>
-          }
-        />
-        <Route
           path='/inventory'
           element={
             <MainRootLayout>
@@ -80,7 +102,39 @@ createRoot(document.getElementById('root')).render(
           path='/settings'
           element={
             <MainRootLayout>
-              <CustomersPage />
+              <SettingsPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/settings/groups'
+          element={
+            <MainRootLayout>
+              <GroupsPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/settings/station'
+          element={
+            <MainRootLayout>
+              <StationPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/settings/backup'
+          element={
+            <MainRootLayout>
+              <BackupPage />
+            </MainRootLayout>
+          }
+        />
+        <Route
+          path='/reports'
+          element={
+            <MainRootLayout>
+              <ReportsPage />
             </MainRootLayout>
           }
         />

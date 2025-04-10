@@ -1,11 +1,7 @@
-'use client';
-
 import React, { useCallback, useEffect, useState } from 'react'
 import Stats from './components/Stats';
 import { Card, CardContent, CardHeader, CardTitle } from "@renderer/components/ui/card";
-import DevicesTable from './components/DevicesTable';
 import ConsumablesTable from './components/ConsumablesTable';
-import LowStockTable from './components/LowStockTable';
 import { Button } from '@renderer/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useCollection } from '@renderer/hooks/pbCollection';
@@ -15,16 +11,28 @@ function InventoryPage() {
   const { data: devices } = useCollection('devices', {
     expand: 'group'
   })
-  const [LowStocks, setLowStocks] = useState([]);
-  const [selectedData, setselectedData] = useState('Devices');
+  const [Stocks, setStocks] = useState([]);
+  const [selectedData, setselectedData] = useState('Total Stock');
 
   useEffect(() => {
     const fetchData = async () => {
-      const low_stock = snacks.filter((snack) => snack?.status === 'Low Stock')
-      setLowStocks(low_stock)
+      switch (selectedData) {
+        case 'Stocks':
+          setStocks(snacks.filter((snack) => snack?.location === 'Stock'));
+          break;
+        case 'Fridge':
+          setStocks(snacks.filter((snack) => snack?.location === 'Fridge'));
+          break;
+        case 'Low Stock':
+          setStocks(snacks.filter((snack) => snack?.status === 'Low Stock'));
+          break;
+        default:
+          setStocks(snacks);
+          break;
+      }
     }
     fetchData();
-  }, [snacks, devices]);
+  }, [snacks, selectedData]);
 
   const handleAdd = useCallback(async (page) => {
     await window.api.customDialog(page);
@@ -38,13 +46,8 @@ function InventoryPage() {
           <div className='flex items-center justify-between'>
             <CardTitle>{selectedData}</CardTitle>
             {
-              selectedData === 'Devices' ? (
-                <Button className={'flex items-center'} onClick={() => handleAdd('device_add_dialog')}>
-                  <p>Add</p>
-                  <Plus />
-                </Button>
-              ) : (
-                selectedData === 'Consumables' ? (
+              (
+                selectedData === 'Total Stock' ? (
                   <Button className={'flex items-center'} onClick={() => handleAdd('snack_add_dialog')}>
                     <p>Add</p>
                     <Plus />
@@ -55,17 +58,7 @@ function InventoryPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {
-            selectedData === 'Devices' ? (
-              <DevicesTable data={devices} />
-            ) : (
-              selectedData === 'Consumables' ? (
-                <ConsumablesTable data={snacks} />
-              ) : (
-                <LowStockTable data={LowStocks} />
-              )
-            )
-          }
+          <ConsumablesTable data={Stocks} />
         </CardContent>
       </Card>
 
