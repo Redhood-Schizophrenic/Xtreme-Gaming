@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from "@renderer/components/ui/button";
 import { Download, HardDrive, Database, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';

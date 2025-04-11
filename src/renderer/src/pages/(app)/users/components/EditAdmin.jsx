@@ -4,7 +4,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Button } from "@renderer/components/ui/button";
 import { useState, useEffect } from 'react';
 import { useCollection } from '@renderer/hooks/pbCollection';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 export default function EditAdmin() {
   const { user_id } = useParams();

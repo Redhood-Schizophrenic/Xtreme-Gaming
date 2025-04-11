@@ -11,7 +11,7 @@ import { Label } from "@renderer/components/ui/label"
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@renderer/contexts/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login, error } = useAuth();

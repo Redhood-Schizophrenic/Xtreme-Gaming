@@ -5,16 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@rend
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/tabs"
 import { useCollection } from "@renderer/hooks/pbCollection"
 import { useAuth } from "@renderer/contexts/AuthContext"
-import { 
-  BarChart, 
-  LineChart, 
-  PieChart, 
-  Users, 
-  MonitorSmartphone, 
-  ShoppingBag, 
-  Calendar, 
-  Clock, 
-  TrendingUp, 
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  Users,
+  MonitorSmartphone,
+  ShoppingBag,
+  Clock,
+  TrendingUp,
   Activity,
   DollarSign
 } from "lucide-react"
@@ -76,7 +75,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Gaming Stations</CardTitle>
@@ -89,7 +88,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Inventory Items</CardTitle>
@@ -102,7 +101,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Revenue</CardTitle>
@@ -124,7 +123,7 @@ export default function DashboardPage() {
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="overview" className="space-y-4">
           {/* Active Sessions */}
           <Card>
@@ -182,7 +181,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardHeader>
@@ -216,7 +215,7 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Recent Transactions</CardTitle>
@@ -232,7 +231,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="analytics" className="space-y-4">
           <Card>
             <CardHeader>
@@ -248,7 +247,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>User Growth</CardTitle>

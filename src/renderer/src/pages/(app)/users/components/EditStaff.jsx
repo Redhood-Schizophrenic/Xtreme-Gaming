@@ -1,10 +1,9 @@
-import React from 'react'
 import { Label } from "@renderer/components/ui/label";
 import { Input } from "@renderer/components/ui/input";
 import { Button } from "@renderer/components/ui/button";
 import { useState, useEffect } from 'react';
 import { useCollection } from '@renderer/hooks/pbCollection';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 export default function EditStaff() {
   const { user_id } = useParams();

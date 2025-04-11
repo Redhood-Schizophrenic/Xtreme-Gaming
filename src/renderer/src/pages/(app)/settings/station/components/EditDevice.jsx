@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useCollection } from '@renderer/hooks/pbCollection';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@renderer/components/ui/select';
 import { Checkbox } from '@renderer/components/ui/checkbox';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 export default function EditDevice() {
   const { device_id } = useParams();

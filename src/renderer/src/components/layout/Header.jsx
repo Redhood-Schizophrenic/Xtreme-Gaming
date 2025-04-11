@@ -1,7 +1,6 @@
-// Remove the 'use client' directive since it's not needed in Vite
 import { ModeToggle } from '../ui/theme-toggle';
 import ProfileIcon from './ProfileIcon';
-import { useLocation } from 'react-router';
+import { useLocation, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { navLinks } from '../../lib/data/Navbar';
 import TimeComponent from './Timer';
@@ -36,8 +35,8 @@ export default function AppHeader() {
             <div className="flex gap-4 items-center">
               {
                 navLinks.map((navItem) => (
-                  <a
-                    href={navItem.href}
+                  <Link
+                    to={navItem.href}
                     key={navItem.id}
                     className={`flex flex-col items-center justify-center gap-2 text-xs uppercase p-2 w-[80px] overflow-hidden
                       ${currentNav === navItem.id
@@ -47,7 +46,7 @@ export default function AppHeader() {
                   >
                     <navItem.icon className='w-4 h-4' />
                     {navItem.name}
-                  </a>
+                  </Link>
                 ))
               }
             </div>

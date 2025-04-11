@@ -12,7 +12,7 @@ import {
 import { toast } from 'sonner';
 import fetchCustomers from '@renderer/lib/data/Customers';
 import { Button } from '@renderer/components/ui/button';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom'
 
 function AddSession() {
   const router = useNavigate();

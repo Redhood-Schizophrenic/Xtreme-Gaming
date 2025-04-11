@@ -5,7 +5,7 @@ import { Button } from "@renderer/components/ui/button";
 import { useState } from 'react';
 import { useCollection } from '@renderer/hooks/pbCollection';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@renderer/components/ui/select';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 export default function EditSnack() {
   const { snack_id } = useParams();

@@ -2,11 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@renderer/components/ui/card";
 import { Button } from "@renderer/components/ui/button";
 import { Badge } from "@renderer/components/ui/badge";
-import { Separator } from "@renderer/components/ui/separator";
 import { Database, FileDown, RotateCcw } from "lucide-react";
 import BackupStatusIndicator from './components/BackupStatusIndicator';
 import BackupHistory from './components/BackupHistory';
-import RestoreSection from './components/RestoreSection';
 import BackupService from './api';
 import { toast } from 'sonner';
 

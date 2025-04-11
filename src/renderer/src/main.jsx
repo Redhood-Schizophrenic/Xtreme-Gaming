@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter as Router, Routes, Route } from 'react-router'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './index.css'
 import DashboardPage from './pages/(app)/dashboard/page'
 import StaticDashboardPage from './pages/(app)/static-dashboard/page'
@@ -44,14 +44,6 @@ createRoot(document.getElementById('root')).render(
         />
         <Route
           path='/dashboard'
-          element={
-            <MainRootLayout>
-              <DashboardPage />
-            </MainRootLayout>
-          }
-        />
-        <Route
-          path='/static-dashboard'
           element={
             <MainRootLayout>
               <StaticDashboardPage />

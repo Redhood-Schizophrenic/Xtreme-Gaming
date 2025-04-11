@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from "@renderer/components/ui/button";
 import { Upload, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 

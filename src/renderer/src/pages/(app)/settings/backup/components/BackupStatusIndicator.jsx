@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckCircle2, Database, XCircle } from 'lucide-react';
 
 export default function BackupStatusIndicator({ status, lastBackupDate }) {

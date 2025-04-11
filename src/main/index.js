@@ -34,7 +34,9 @@ function createWindow() {
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.webContents.openDevTools();
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    // Ensure URL uses forward slashes for Windows compatibility
+    const rendererUrl = process.env['ELECTRON_RENDERER_URL'].replace(/\\/g, '/');
+    mainWindow.loadURL(rendererUrl)
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
@@ -72,11 +74,21 @@ app.whenReady().then(() => {
     }
   });
 
+  // IPC for custom dialog close - defined once outside the dialog handler
+  ipcMain.handle('custom-dialog-close', () => {
+    if (dialogWindow) {
+      dialogWindow.close();
+      dialogWindow = null;
+      return { success: true };
+    }
+    return { success: false };
+  });
+
   // IPC for custom dialog box
   ipcMain.handle('custom-dialog', (_, { page }) => {
     if (dialogWindow) {
       dialogWindow.focus();
-      return
+      return { success: false, message: 'Dialog already open' };
     }
 
     dialogWindow = new BrowserWindow({
@@ -94,25 +106,33 @@ app.whenReady().then(() => {
       }
     });
 
+    // Handle dialog closed by user (X button)
+    dialogWindow.on('closed', () => {
+      dialogWindow = null;
+    });
+
     dialogWindow.removeMenu();
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-      dialogWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/${page}`)
+      // Ensure forward slashes for URLs - important for Windows compatibility
+      const normalizedPage = page.split(/[\\\/]/).join('/');
+      // Ensure the base URL also uses forward slashes
+      const baseUrl = process.env['ELECTRON_RENDERER_URL'].replace(/\\/g, '/');
+      const url = `${baseUrl}/${normalizedPage}`;
+      dialogWindow.loadURL(url)
     } else {
+      // For production, we need to load the HTML file and then navigate to the correct route
       dialogWindow.loadFile(join(__dirname, '../renderer/index.html'))
+      // Wait for the page to load, then navigate to the correct route
+      dialogWindow.webContents.once('did-finish-load', () => {
+        dialogWindow.webContents.executeJavaScript(`window.location.hash = '${page}'`)
+      })
     }
     dialogWindow.once('ready-to-show', () => {
       dialogWindow.show()
     });
 
-    return new Promise((resolve) => {
-      // On Close event
-      ipcMain.handle('custom-dialog-close', () => {
-        dialogWindow.close();
-        dialogWindow = null;
-        resolve({ success: true })
-      });
-    });
+    return { success: true };
   });
 
   createWindow()

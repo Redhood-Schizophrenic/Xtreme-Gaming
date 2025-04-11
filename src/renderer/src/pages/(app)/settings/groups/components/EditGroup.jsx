@@ -4,7 +4,7 @@ import { Input } from "@renderer/components/ui/input";
 import { Button } from "@renderer/components/ui/button";
 import { useCollection } from '@renderer/hooks/pbCollection';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@renderer/components/ui/select';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 export default function EditGroup() {
   const { group_id } = useParams();

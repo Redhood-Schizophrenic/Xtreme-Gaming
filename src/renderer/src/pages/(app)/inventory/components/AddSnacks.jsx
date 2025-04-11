@@ -20,8 +20,7 @@ export default function AddSnack() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await createItem(formData);
-      console.log(result);
+      await createItem(formData);
       await window.api.notify('Success', 'Snack added successfully!!!');
     } catch (error) {
       await window.api.notify('Error', 'Error adding snack, please try again later....');

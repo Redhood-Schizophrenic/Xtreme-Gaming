@@ -8,12 +8,6 @@ export const navLinks = [
     icon: LayoutDashboard,
   },
   {
-    id: 'static-dashboard',
-    name: 'Static',
-    href: '/static-dashboard',
-    icon: MonitorPlay,
-  },
-  {
     id: 'inventory',
     name: 'Inventory',
     href: '/inventory',
