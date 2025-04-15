@@ -14,18 +14,18 @@ import {
   ContextMenuItem,
   ContextMenuTrigger
 } from '@renderer/components/ui/context-menu'
+import pb from '../../api/pocketbase'
 // Device dialog now uses a separate window
 
 function HomePage() {
-  const { data: devices, loading, error } = useCollection('devices')
-  // We'll use the useNavigate hook in case we need to navigate programmatically later
+  const { data: devices, loading, error, updateItem: updateDevice } = useCollection('devices')
+  const { data: sessions, updateItem: updateSession } = useCollection('sessions', {
+    sort: '-created',
+  })
+  const { createItem: createSessionLog } = useCollection('session_logs')
   const [selectedDevice, setSelectedDevice] = useState(null)
-  // const [, setDialogOpen] = useState(false)
-  // const [selectedDeviceData, setSelectedDeviceData] = useState(null)
+  const { data: groups } = useCollection('groups')
 
-  // No longer needed - using window instead of dialog
-
-  // Initialize devices in PocketBase if they don't exist
   useEffect(() => {
     initializeDevices()
   }, [])
@@ -86,12 +86,61 @@ function HomePage() {
     }
   }
 
-  const handleStopSession = (device) => {
-    if (device.status === 'Occupied') {
-      toast.success(`Stopping session for ${device.name}`)
-      // Implement actual stop session logic here
-    } else {
-      toast.warning(`No active session on ${device.name}`)
+  const handleStopSession = async (device) => {
+    const activeSession = sessions.find(
+      (s) =>
+        s.device === device.id && (device.status === 'Available' || device.status === 'Occupied')
+    );
+    if (!device.status === 'Occupied' || !activeSession) {
+      toast.warning(`No active session to stop on ${device?.name || 'this device'}`)
+      return
+    }
+
+    try {
+      // Calculate session duration and amount
+      const inTime = new Date(activeSession.in_time)
+      const outTime = new Date()
+      const durationMs = outTime - inTime
+
+      // Calculate duration in hours with 2 decimal precision
+      const durationHours = parseFloat((durationMs / (1000 * 60 * 60)).toFixed(2))
+
+      // Get hourly rate from device group
+      let hourlyRate = 70 // Default rate if no group is found
+      if (device.group && groups) {
+        const deviceGroup = groups.find((g) => g.id === device.group)
+        if (deviceGroup && deviceGroup.price) {
+          hourlyRate = deviceGroup.price
+        }
+      }
+
+      const sessionAmount = durationHours * hourlyRate
+
+      // Update session status to Closed
+      await updateSession(activeSession.id, {
+        status: 'Closed',
+        out_time: outTime.toISOString(),
+        duration: durationHours,
+        session_total: sessionAmount,
+        total_amount: sessionAmount + (activeSession.snacks_total || 0)
+      })
+
+      // Update device status to Available
+      await updateDevice(device.id, {
+        status: 'Available'
+      })
+
+      // Create session log
+      await createSessionLog({
+        session_id: activeSession.id,
+        type: 'Closed',
+        billed_by: pb.authStore.record?.id,
+        session_amount: sessionAmount
+      })
+      toast.success(`Session closed successfully for ${device.name}`)
+    } catch (error) {
+      console.error('Error closing session:', error)
+      toast.error(`Failed to close session: ${error.message}`)
     }
   }
 
