@@ -9,7 +9,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ReferenceLine
 } from "recharts"
 
 // We'll generate data from users
@@ -39,6 +40,10 @@ export default function UserGrowthChart({ users }) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const monthData = {};
 
+  // Get current date to limit future projections
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+
   // Initialize data for each month
   months.forEach(month => {
     monthData[month] = { month, users: 0 };
@@ -58,18 +63,22 @@ export default function UserGrowthChart({ users }) {
         const date = new Date(user.created);
         const month = months[date.getMonth()];
         runningTotal++;
-        // Set all months from this one forward to at least this value
+
+        // Only update months up to the current month
         const monthIndex = date.getMonth();
-        for (let i = monthIndex; i < 12; i++) {
+        for (let i = monthIndex; i <= currentMonth; i++) {
           monthData[months[i]].users = Math.max(monthData[months[i]].users, runningTotal);
         }
       }
     });
   }
 
-  // Convert to array for chart
-  months.forEach(month => {
-    userGrowthData.push(monthData[month]);
+  // Convert to array for chart and add a property to indicate future months
+  months.forEach((month, index) => {
+    const monthObj = monthData[month];
+    // Add a property to indicate if this is a future month
+    monthObj.isFuture = index > currentMonth;
+    userGrowthData.push(monthObj);
   });
   return (
     <Card>
@@ -85,17 +94,26 @@ export default function UserGrowthChart({ users }) {
             data={userGrowthData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
+            {/* Line for actual data */}
             <Line
               type="monotone"
               dataKey="users"
               name="Users"
               stroke="var(--chart-2)"
               activeDot={{ r: 8 }}
+              strokeWidth={2}
+            />
+
+            {/* Add a reference line for the current month */}
+            <ReferenceLine
+              x={months[currentDate.getMonth()]}
+              stroke="var(--chart-4)"
+              strokeDasharray="3 3"
             />
           </LineChart>
         </ResponsiveContainer>

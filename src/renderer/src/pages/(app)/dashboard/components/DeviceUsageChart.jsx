@@ -75,7 +75,7 @@ export default function DeviceUsageChart({ devices, className }) {
           Distribution of gaming station usage
         </CardDescription>
       </CardHeader>
-      <CardContent className="h-80">
+      <CardContent className="min-h-80">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

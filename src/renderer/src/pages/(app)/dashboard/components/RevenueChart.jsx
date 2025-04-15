@@ -50,7 +50,7 @@ export default function RevenueChart({ sessions }) {
       if (session.in_time) {
         const date = new Date(session.in_time);
         const month = months[date.getMonth()];
-        monthData[month].revenue += session.amount || 0;
+        monthData[month].revenue += session.amount_paid || 0;
       }
     });
   }
@@ -73,7 +73,7 @@ export default function RevenueChart({ sessions }) {
             data={revenueData}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip content={<CustomTooltip />} />

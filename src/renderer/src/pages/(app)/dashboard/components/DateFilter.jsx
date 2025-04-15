@@ -1,0 +1,192 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@renderer/components/ui/button'
+import { Calendar, ChevronDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from '@renderer/components/ui/dropdown-menu'
+import { Input } from '@renderer/components/ui/input'
+import { Label } from '@renderer/components/ui/label'
+import { format, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns'
+
+export default function DateFilter({ onFilterChange }) {
+  const [selectedFilter, setSelectedFilter] = useState('today')
+  const [customRange, setCustomRange] = useState({
+    from: format(new Date(), 'yyyy-MM-dd'),
+    to: format(new Date(), 'yyyy-MM-dd')
+  })
+  const [isCustom, setIsCustom] = useState(false)
+
+  // Apply the filter when it changes
+  useEffect(() => {
+    if (!isCustom) {
+      const dateRange = getDateRangeFromFilter(selectedFilter)
+      onFilterChange(dateRange)
+    } else {
+      onFilterChange({
+        from: setToStartOfDay(new Date(customRange.from)),
+        to: setToEndOfDay(new Date(customRange.to))
+      })
+    }
+  }, [selectedFilter, customRange, isCustom, onFilterChange])
+
+  // Helper function to set time to start of day (00:00:00)
+  const setToStartOfDay = (date) => {
+    return setMilliseconds(setSeconds(setMinutes(setHours(date, 0), 0), 0), 0)
+  }
+
+  // Helper function to set time to end of day (23:59:59)
+  const setToEndOfDay = (date) => {
+    return setMilliseconds(setSeconds(setMinutes(setHours(date, 23), 59), 59), 999)
+  }
+
+  // Get date range based on filter
+  const getDateRangeFromFilter = (filter) => {
+    const today = new Date()
+
+    switch (filter) {
+      case 'today':
+        return {
+          from: setToStartOfDay(today),
+          to: setToEndOfDay(today)
+        }
+      case 'yesterday':
+        const yesterday = subDays(today, 1)
+        return {
+          from: setToStartOfDay(yesterday),
+          to: setToEndOfDay(yesterday)
+        }
+      case 'thisWeek':
+        return {
+          from: setToStartOfDay(startOfWeek(today, { weekStartsOn: 1 })),
+          to: setToEndOfDay(endOfWeek(today, { weekStartsOn: 1 }))
+        }
+      case 'thisMonth':
+        return {
+          from: setToStartOfDay(startOfMonth(today)),
+          to: setToEndOfDay(endOfMonth(today))
+        }
+      case 'thisYear':
+        return {
+          from: setToStartOfDay(startOfYear(today)),
+          to: setToEndOfDay(endOfYear(today))
+        }
+      default:
+        return {
+          from: setToStartOfDay(today),
+          to: setToEndOfDay(today)
+        }
+    }
+  }
+
+  // Get display text for the current filter
+  const getFilterDisplayText = () => {
+    if (isCustom) {
+      return `${format(new Date(customRange.from), 'MMM dd, yyyy')} - ${format(new Date(customRange.to), 'MMM dd, yyyy')}`
+    }
+
+    switch (selectedFilter) {
+      case 'today':
+        return 'Today'
+      case 'yesterday':
+        return 'Yesterday'
+      case 'thisWeek':
+        return 'This Week'
+      case 'thisMonth':
+        return 'This Month'
+      case 'thisYear':
+        return 'This Year'
+      default:
+        return 'Select Date Range'
+    }
+  }
+
+  // Handle filter selection
+  const handleFilterSelect = (filter) => {
+    setSelectedFilter(filter)
+    setIsCustom(false)
+  }
+
+  // Handle custom range selection
+  const handleCustomRangeChange = (e) => {
+    setCustomRange({
+      ...customRange,
+      [e.target.name]: e.target.value
+    })
+    setIsCustom(true)
+  }
+
+  // Apply custom range
+  const applyCustomRange = () => {
+    setIsCustom(true)
+    onFilterChange({
+      from: setToStartOfDay(new Date(customRange.from)),
+      to: setToEndOfDay(new Date(customRange.to))
+    })
+  }
+
+  return (
+    <div className="flex items-center">
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>{getFilterDisplayText()}</span>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuItem onSelect={() => handleFilterSelect('today')}>
+            Today
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => handleFilterSelect('yesterday')}>
+            Yesterday
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => handleFilterSelect('thisWeek')}>
+            This Week
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => handleFilterSelect('thisMonth')}>
+            This Month
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => handleFilterSelect('thisYear')}>
+            This Year
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <div className="p-2">
+            <div className="space-y-2">
+              <Label htmlFor="from">From</Label>
+              <Input
+                id="from"
+                name="from"
+                type="date"
+                value={customRange.from}
+                onChange={handleCustomRangeChange}
+              />
+            </div>
+            <div className="mt-2 space-y-2">
+              <Label htmlFor="to">To</Label>
+              <Input
+                id="to"
+                name="to"
+                type="date"
+                value={customRange.to}
+                onChange={handleCustomRangeChange}
+              />
+            </div>
+            <Button
+              className="mt-4 w-full"
+              onClick={applyCustomRange}
+            >
+              Apply Custom Range
+            </Button>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}

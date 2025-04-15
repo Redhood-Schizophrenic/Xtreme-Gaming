@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <p className="font-medium">{`${label}`}</p>
         {payload.map((entry, index) => (
           <p key={index} style={{ color: entry.color }}>
-            {`${entry.name}: $${entry.value}`}
+            {`${entry.name}: ₹ ${entry.value.toFixed(2)}`}
           </p>
         ))}
       </div>
@@ -50,7 +50,8 @@ export default function TransactionChart({ sessions, snacks }) {
       if (session.in_time) {
         const date = new Date(session.in_time);
         const day = days[date.getDay()];
-        dayData[day].gaming += session.amount || 0;
+        dayData[day].gaming += session.session_total || 0;
+        dayData[day].snacks += session.snacks_total || 0;
       }
     });
   }
@@ -84,14 +85,13 @@ export default function TransactionChart({ sessions, snacks }) {
             data={transactionData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar dataKey="gaming" name="Gaming Sessions" fill="var(--chart-1)" />
-            <Bar dataKey="snacks" name="Snack Purchases" fill="var(--chart-2)" />
-            <Bar dataKey="memberships" name="Memberships" fill="var(--chart-3)" />
+            <Bar dataKey="snacks" name="Snack Sales" fill="var(--chart-2)" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
