@@ -1,6 +1,12 @@
-import { ChartNoAxesColumnDecreasing, ChartPie, LayoutDashboard, MonitorPlay, Package, Settings, Users } from "lucide-react";
+import { ChartNoAxesColumnDecreasing, ChartPie, HousePlus, LayoutDashboard, MonitorPlay, Package, Settings, Users } from "lucide-react";
 
 export const navLinks = [
+  {
+    id: '',
+    name: 'Home',
+    href: '/',
+    icon: HousePlus,
+  },
   {
     id: 'dashboard',
     name: 'Dashboard',

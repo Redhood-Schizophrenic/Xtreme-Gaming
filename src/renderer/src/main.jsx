@@ -2,10 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './index.css'
-import DashboardPage from './pages/(app)/dashboard/page'
+// import DashboardPage from './pages/(app)/dashboard/page'
 import StaticDashboardPage from './pages/(app)/static-dashboard/page'
 import LogsPage from './pages/(app)/logs/page'
 import InventoryPage from './pages/(app)/inventory/page'
+import HomePage from './pages/home/page'
 import Bookings from './pages/bookings/page'
 import MainRootLayout, { ThemedLayout } from './layout'
 import AddSession from './pages/bookings/add/[device]/page'
@@ -28,6 +29,9 @@ import SettingsPage from './pages/(app)/settings/page'
 import StationPage from './pages/(app)/settings/station/page'
 import BackupPage from './pages/(app)/settings/backup/page'
 import ReportsPage from './pages/(app)/reports/page'
+import SessionBookingPage from './pages/session-booking/[deviceId]/page'
+import DeviceInfoPage from './pages/device-info/[deviceId]/page'
+import SessionSnacksPage from './pages/session-snacks/[sessionId]/page'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -38,7 +42,7 @@ createRoot(document.getElementById('root')).render(
           path='/'
           element={
             <MainRootLayout>
-              <DashboardPage />
+              <HomePage />
             </MainRootLayout>
           }
         />
@@ -128,6 +132,30 @@ createRoot(document.getElementById('root')).render(
             <MainRootLayout>
               <ReportsPage />
             </MainRootLayout>
+          }
+        />
+        <Route
+          path="/session-booking/:deviceId"
+          element={
+            <ThemedLayout>
+              <SessionBookingPage />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path="/device-info/:deviceId"
+          element={
+            <ThemedLayout>
+              <DeviceInfoPage />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path="/session-snacks/:sessionId"
+          element={
+            <ThemedLayout>
+              <SessionSnacksPage />
+            </ThemedLayout>
           }
         />
 

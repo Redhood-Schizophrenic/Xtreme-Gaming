@@ -68,19 +68,20 @@ function Bookings() {
       <div className="grid grid-cols-10 gap-4">
         {devices.map((device, index) => (
           <ContextMenu key={index}>
-            <ContextMenuTrigger>
-              <Card
-                className={`cursor-pointer transition-all p-1 flex flex-col items-center m-0 ${selectedDevices.includes(device.name)
-                  ? 'border-primary border-2'
-                  : ''
-                  }
+            <ContextMenuTrigger asChild>
+              <div>
+                <Card
+                  className={`cursor-pointer transition-all p-1 flex flex-col items-center m-0 ${selectedDevices.includes(device.name)
+                    ? 'border-primary border-2'
+                    : ''
+                    }
 							${device.status === 'Available'
-                    ? ''
-                    : 'text-primary bg-primary/20'
-                  }
+                      ? ''
+                      : 'text-primary bg-primary/20'
+                    }
 						`}
-                onClick={() => handleDeviceSelect(device)}
-              >
+                  onClick={() => handleDeviceSelect(device)}
+                >
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Checkbox
@@ -97,35 +98,38 @@ function Bookings() {
                   </div>
 
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             </ContextMenuTrigger>
             <ContextMenuContent>
               <ContextMenuItem
                 disabled={device.status !== 'Available'}
                 onClick={() => router(`/bookings/add/${device?.name}`)}
+                className="flex items-center gap-2"
               >
-                <div className='flex items-center gap-1'>
-                  <Play />
-                  Start
-                </div>
+                <Play className="h-4 w-4" />
+                <span>Start</span>
               </ContextMenuItem>
-              <ContextMenuItem disabled={device.status !== 'Occupied'}>
-                <div className='flex items-center gap-1'>
-                  <Timer />
-                  Extend
-                </div>
+              <ContextMenuItem
+                disabled={device.status !== 'Occupied'}
+                className="flex items-center gap-2"
+              >
+                <Timer className="h-4 w-4" />
+                <span>Extend</span>
               </ContextMenuItem>
-              <ContextMenuItem disabled={device.status !== 'Occupied'}>
-                <div className='flex items-center gap-1'>
-                  <Cookie />
-                  Snacks
-                </div>
+              <ContextMenuItem
+                disabled={device.status !== 'Occupied'}
+                className="flex items-center gap-2"
+              >
+                <Cookie className="h-4 w-4" />
+                <span>Snacks</span>
               </ContextMenuItem>
-              <ContextMenuItem disabled={device.status !== 'Occupied'}>
-                <div className='flex items-center gap-1'>
-                  <Pause />
-                  Stop
-                </div>
+              <ContextMenuItem
+                disabled={device.status !== 'Occupied'}
+                className="flex items-center gap-2"
+              >
+                <Pause className="h-4 w-4" />
+                <span>Stop</span>
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>

@@ -58,6 +58,7 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
   // IPC for Native Notification
   ipcMain.handle('show-notification', (_, { title, body }) => {
     try {
