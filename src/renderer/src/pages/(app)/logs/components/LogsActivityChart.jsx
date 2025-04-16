@@ -104,6 +104,10 @@ export default function LogsActivityChart({ data }) {
                     <stop offset="5%" stopColor="#ffc658" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#ffc658" stopOpacity={0}/>
                   </linearGradient>
+                  <linearGradient id="colorDevices" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ff6b6b" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#ff6b6b" stopOpacity={0}/>
+                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                 <XAxis dataKey="hour" stroke="rgba(255,255,255,0.5)" />
@@ -146,6 +150,15 @@ export default function LogsActivityChart({ data }) {
                   dot={{ r: 3 }}
                   activeDot={{ r: 6, strokeWidth: 0 }}
                 />
+                <Line
+                  type="monotone"
+                  dataKey="devices"
+                  name="Device Logs"
+                  stroke="#ff6b6b"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
               </LineChart>
             ) : (
               <AreaChart
@@ -168,6 +181,10 @@ export default function LogsActivityChart({ data }) {
                   <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ffc658" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#ffc658" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorDevices" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ff6b6b" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#ff6b6b" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -206,6 +223,14 @@ export default function LogsActivityChart({ data }) {
                   stroke="#ffc658"
                   fillOpacity={1}
                   fill="url(#colorSessions)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="devices"
+                  name="Device Logs"
+                  stroke="#ff6b6b"
+                  fillOpacity={1}
+                  fill="url(#colorDevices)"
                 />
               </AreaChart>
             )}

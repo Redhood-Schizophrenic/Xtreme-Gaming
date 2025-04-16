@@ -134,11 +134,17 @@ export default function DevicesTable({ data }) {
               <DropdownMenuItem
                 onClick={
                   async () => {
-                    console.log(`/device_edit_dialog/${row.original.id}`)
                     await window.api.customDialog(`device_edit_dialog/${row.original.id}`)
                   }
                 }
               >Edit</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={
+                  async () => {
+                    await window.api.customDialog(`device_update_dialog/${row.original.id}`)
+                  }
+                }
+              >Update Status</DropdownMenuItem>
               <DropdownMenuItem
                 className={'text-red-500'}
                 onClick={async () => {

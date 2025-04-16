@@ -24,14 +24,29 @@ export default function DateFilter({ onFilterChange }) {
 
   // Apply the filter when it changes
   useEffect(() => {
-    if (!isCustom) {
-      const dateRange = getDateRangeFromFilter(selectedFilter)
-      onFilterChange(dateRange)
-    } else {
-      onFilterChange({
-        from: setToStartOfDay(new Date(customRange.from)),
-        to: setToEndOfDay(new Date(customRange.to))
-      })
+    try {
+      if (!isCustom) {
+        const dateRange = getDateRangeFromFilter(selectedFilter)
+        console.log('Applying preset filter:', selectedFilter, dateRange)
+        onFilterChange(dateRange)
+      } else {
+        const fromDate = setToStartOfDay(new Date(customRange.from))
+        const toDate = setToEndOfDay(new Date(customRange.to))
+
+        // Validate dates
+        if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+          console.error('Invalid custom date range:', customRange)
+          return
+        }
+
+        console.log('Applying custom date range:', { from: fromDate, to: toDate })
+        onFilterChange({
+          from: fromDate,
+          to: toDate
+        })
+      }
+    } catch (error) {
+      console.error('Error applying date filter:', error)
     }
   }, [selectedFilter, customRange, isCustom, onFilterChange])
 
@@ -123,11 +138,25 @@ export default function DateFilter({ onFilterChange }) {
 
   // Apply custom range
   const applyCustomRange = () => {
-    setIsCustom(true)
-    onFilterChange({
-      from: setToStartOfDay(new Date(customRange.from)),
-      to: setToEndOfDay(new Date(customRange.to))
-    })
+    try {
+      const fromDate = setToStartOfDay(new Date(customRange.from))
+      const toDate = setToEndOfDay(new Date(customRange.to))
+
+      // Validate dates
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        console.error('Invalid custom date range:', customRange)
+        return
+      }
+
+      setIsCustom(true)
+      console.log('Manually applying custom date range:', { from: fromDate, to: toDate })
+      onFilterChange({
+        from: fromDate,
+        to: toDate
+      })
+    } catch (error) {
+      console.error('Error applying custom date range:', error)
+    }
   }
 
   return (

@@ -12,12 +12,22 @@ import { useCollection } from "@renderer/hooks/pbCollection"
 
 export default function LogsPage() {
   // State for filters
-  const [filters, setFilters] = useState({
-    search: "",
-    type: "all",
-    dateRange: {
-      from: new Date(),
-      to: new Date()
+  const [filters, setFilters] = useState(() => {
+    // Initialize with today's date range
+    const today = new Date()
+    const startOfDay = new Date(today)
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const endOfDay = new Date(today)
+    endOfDay.setHours(23, 59, 59, 999)
+
+    return {
+      search: "",
+      type: "all",
+      dateRange: {
+        from: startOfDay,
+        to: endOfDay
+      }
     }
   })
 
@@ -42,22 +52,30 @@ export default function LogsPage() {
     expand: 'session_id,billed_by'
   })
 
+  const { data: deviceLogs, loading: deviceLogsLoading } = useCollection('device_logs', {
+    sort: '-created',
+    expand: 'device,user'
+  })
+
   // State for filtered logs
   const [filteredLogs, setFilteredLogs] = useState({
     loginLogs: [],
     snacksSalesLogs: [],
     snacksMaintenanceLogs: [],
-    sessionLogs: []
+    sessionLogs: [],
+    deviceLogs: []
   })
 
   // Process and format the data from PocketBase
   const processLoginLogs = (logs) => {
     if (!logs) return []
+    console.log(logs);
     return logs.map(log => ({
       user: log.expand?.user?.name || 'Unknown User',
       login: log?.login,
       logout: log?.logout,
       timestamp: log?.created,
+      // ...log,
     }))
   }
 
@@ -96,14 +114,26 @@ export default function LogsPage() {
       type: log.type || 'Session',
       amount: log.session_amount || 0,
       timestamp: log.created,
-      details: `Session ${log.type || 'updated'} - Amount: ₹${log.session_amount || 0}`
+      details: `Session ${log.type || 'updated'} at Amount: Rs. ${log.session_amount || 0}`
+    }))
+  }
+
+  // Process device logs
+  const processDeviceLogs = (logs) => {
+    if (!logs) return []
+    return logs.map(log => ({
+      device: log.expand?.device?.name || 'Unknown Device',
+      status: log.status || 'Status Change',
+      user: log.expand?.user?.name || 'System',
+      details: log.details || `Device status changed to ${log.status}`,
+      timestamp: log.created
     }))
   }
 
   // Generate chart data based on logs
   const generateChartData = useCallback(() => {
     // Skip if data is still loading
-    if (loginLogsLoading || snacksLogsLoading || inventoryLogsLoading || sessionLogsLoading) {
+    if (loginLogsLoading || snacksLogsLoading || inventoryLogsLoading || sessionLogsLoading || deviceLogsLoading) {
       return [
         { hour: '00:00', logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
         { hour: '04:00', logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
@@ -116,12 +146,12 @@ export default function LogsPage() {
 
     // Initialize data structure
     const hourlyData = {
-      '00:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
-      '04:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
-      '08:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
-      '12:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
-      '16:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
-      '20:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0 },
+      '00:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
+      '04:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
+      '08:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
+      '12:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
+      '16:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
+      '20:00': { logins: 0, snacksSales: 0, snacksMaintenance: 0, sessions: 0, devices: 0 },
     }
 
     // Count login logs by hour
@@ -184,15 +214,31 @@ export default function LogsPage() {
       hourlyData[timeSlot].sessions++
     })
 
+    // Count device logs by hour
+    deviceLogs?.forEach(log => {
+      const date = new Date(log.created)
+      const hour = date.getHours()
+      let timeSlot = '00:00'
+
+      if (hour >= 4 && hour < 8) timeSlot = '04:00'
+      else if (hour >= 8 && hour < 12) timeSlot = '08:00'
+      else if (hour >= 12 && hour < 16) timeSlot = '12:00'
+      else if (hour >= 16 && hour < 20) timeSlot = '16:00'
+      else if (hour >= 20) timeSlot = '20:00'
+
+      hourlyData[timeSlot].devices++
+    })
+
     // Convert to array format for chart
     return Object.entries(hourlyData).map(([hour, counts]) => ({
       hour,
       logins: counts.logins,
       snacksSales: counts.snacksSales,
       snacksMaintenance: counts.snacksMaintenance,
-      sessions: counts.sessions
+      sessions: counts.sessions,
+      devices: counts.devices
     }))
-  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs, loginLogsLoading, snacksLogsLoading, inventoryLogsLoading, sessionLogsLoading])
+  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs, deviceLogs, loginLogsLoading, snacksLogsLoading, inventoryLogsLoading, sessionLogsLoading, deviceLogsLoading])
 
   // Chart data for log activity
   const logActivityData = generateChartData()
@@ -206,68 +252,22 @@ export default function LogsPage() {
     snacksMaintenanceLogs: snacksLogs?.length || 0,
     snacksMaintenanceLogsTrend: 6,
     sessionLogs: sessionLogs?.length || 0,
-    sessionLogsTrend: 12
+    sessionLogsTrend: 12,
+    deviceLogs: deviceLogs?.length || 0,
+    deviceLogsTrend: 8
   }
 
   // Handle filter changes
-  const handleFilterChange = useCallback((newFilters) => {
+  const handleFilterChange = useCallback((dateRange) => {
+    console.log('Date filter changed:', dateRange);
     setFilters(prev => ({
       ...prev,
-      ...newFilters
+      dateRange: {
+        from: dateRange.from,
+        to: dateRange.to
+      }
     }))
   }, [])
-
-  // Handle search changes
-  const handleSearchChange = useCallback((searchQuery) => {
-    setFilters(prev => ({
-      ...prev,
-      search: searchQuery
-    }))
-
-    // Apply search filter if needed
-    if (searchQuery && searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase()
-
-      // Process the logs
-      const processedLoginLogs = processLoginLogs(loginLogs)
-      const processedSnacksSalesLogs = processSnacksSalesLogs(sessionSnacksLogs || [])
-      const processedSnacksMaintenanceLogs = processSnacksMaintenanceLogs(snacksLogs || [])
-      const processedSessionLogs = processSessionLogs(sessionLogs)
-
-      // Filter logs based on search query
-      const filteredLoginLogs = processedLoginLogs.filter(log =>
-        log.user?.toLowerCase().includes(query) ||
-        (log.details && log.details.toLowerCase().includes(query))
-      )
-
-      const filteredSnacksSalesLogs = processedSnacksSalesLogs.filter(log =>
-        log.item?.toLowerCase().includes(query) ||
-        (log.details && log.details.toLowerCase().includes(query)) ||
-        log.action?.toLowerCase().includes(query) ||
-        log.user?.toLowerCase().includes(query)
-      )
-
-      const filteredSnacksMaintenanceLogs = processedSnacksMaintenanceLogs.filter(log =>
-        log.item?.toLowerCase().includes(query) ||
-        (log.details && log.details.toLowerCase().includes(query)) ||
-        log.action?.toLowerCase().includes(query)
-      )
-
-      const filteredSessionLogs = processedSessionLogs.filter(log =>
-        (log.user && log.user.toLowerCase().includes(query)) ||
-        (log.details && log.details.toLowerCase().includes(query)) ||
-        (log.type && log.type.toLowerCase().includes(query))
-      )
-
-      // Update the filtered logs state
-      setFilteredLogs({
-        loginLogs: filteredLoginLogs,
-        snacksSalesLogs: filteredSnacksSalesLogs,
-        snacksMaintenanceLogs: filteredSnacksMaintenanceLogs,
-        sessionLogs: filteredSessionLogs
-      })
-    }
-  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs])
 
   // Handle refresh
   const handleRefresh = useCallback(() => {
@@ -276,58 +276,10 @@ export default function LogsPage() {
     toast.success("Logs refreshed successfully")
   }, [])
 
-  // Handle export
-  const handleExport = useCallback(() => {
-    // Create a CSV file with all logs
-    const processedLoginLogs = processLoginLogs(loginLogs)
-    const processedSnacksSalesLogs = processSnacksSalesLogs(sessionSnacksLogs || [])
-    const processedSnacksMaintenanceLogs = processSnacksMaintenanceLogs(snacksLogs || [])
-    const processedSessionLogs = processSessionLogs(sessionLogs)
-
-    // Combine all logs
-    const allLogs = [
-      ...processedLoginLogs.map(log => ({ ...log, type: 'Login Log' })),
-      ...processedSnacksSalesLogs.map(log => ({ ...log, type: 'Snacks Sales Log' })),
-      ...processedSnacksMaintenanceLogs.map(log => ({ ...log, type: 'Snacks Maintenance Log' })),
-      ...processedSessionLogs.map(log => ({ ...log, type: 'Session Log' }))
-    ]
-
-    // Sort by timestamp (newest first)
-    allLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-
-    // Convert to CSV
-    const headers = ['Type', 'ID', 'User', 'Action', 'Status', 'Timestamp', 'Details']
-    const csvContent = [
-      headers.join(','),
-      ...allLogs.map(log => [
-        log.type,
-        log.id,
-        log.user || '',
-        log.action || log.type || '',
-        log.status || '',
-        new Date(log.timestamp).toLocaleString(),
-        `"${(log.details || '').replace(/"/g, '""')}"`
-      ].join(','))
-    ].join('\n')
-
-    // Create a blob and download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `logs_export_${new Date().toISOString().split('T')[0]}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    toast.success("Logs exported successfully")
-  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs])
-
   // Process and filter logs based on date range and search
   useEffect(() => {
     // Skip if data is still loading
-    if (loginLogsLoading || snacksLogsLoading || inventoryLogsLoading || sessionLogsLoading) {
+    if (loginLogsLoading || snacksLogsLoading || inventoryLogsLoading || sessionLogsLoading || deviceLogsLoading) {
       return
     }
 
@@ -336,33 +288,90 @@ export default function LogsPage() {
     const processedSnacksSalesLogs = processSnacksSalesLogs(sessionSnacksLogs || [])
     const processedSnacksMaintenanceLogs = processSnacksMaintenanceLogs(snacksLogs || [])
     const processedSessionLogs = processSessionLogs(sessionLogs)
+    const processedDeviceLogs = processDeviceLogs(deviceLogs || [])
 
     // Apply date filtering if needed
-    const fromDate = filters.dateRange.from
-    const toDate = filters.dateRange.to
+    const fromDate = new Date(filters.dateRange.from)
+    const toDate = new Date(filters.dateRange.to)
 
-    // Set the time to include the full day
-    fromDate.setHours(0, 0, 0, 0)
-    toDate.setHours(23, 59, 59, 999)
+    console.log('Filtering logs with date range:', {
+      from: fromDate.toISOString(),
+      to: toDate.toISOString()
+    })
+
+    // Make sure we have valid dates
+    if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+      console.error('Invalid date range for filtering:', filters.dateRange)
+      setFilteredLogs({
+        loginLogs: processedLoginLogs,
+        snacksSalesLogs: processedSnacksSalesLogs,
+        snacksMaintenanceLogs: processedSnacksMaintenanceLogs,
+        sessionLogs: processedSessionLogs
+      })
+      return
+    }
 
     const filteredLoginLogs = processedLoginLogs.filter(log => {
-      const logDate = new Date(log.timestamp)
-      return logDate >= fromDate && logDate <= toDate
+      try {
+        const logDate = new Date(log.timestamp)
+        if (isNaN(logDate.getTime())) return false
+        return logDate >= fromDate && logDate <= toDate
+      } catch (error) {
+        console.error('Error filtering login log:', error)
+        return false
+      }
     })
 
     const filteredSnacksSalesLogs = processedSnacksSalesLogs.filter(log => {
-      const logDate = new Date(log.timestamp)
-      return logDate >= fromDate && logDate <= toDate
+      try {
+        const logDate = new Date(log.timestamp)
+        if (isNaN(logDate.getTime())) return false
+        return logDate >= fromDate && logDate <= toDate
+      } catch (error) {
+        console.error('Error filtering snacks sales log:', error)
+        return false
+      }
     })
 
     const filteredSnacksMaintenanceLogs = processedSnacksMaintenanceLogs.filter(log => {
-      const logDate = new Date(log.timestamp)
-      return logDate >= fromDate && logDate <= toDate
+      try {
+        const logDate = new Date(log.timestamp)
+        if (isNaN(logDate.getTime())) return false
+        return logDate >= fromDate && logDate <= toDate
+      } catch (error) {
+        console.error('Error filtering snacks maintenance log:', error)
+        return false
+      }
     })
 
     const filteredSessionLogs = processedSessionLogs.filter(log => {
-      const logDate = new Date(log.timestamp)
-      return logDate >= fromDate && logDate <= toDate
+      try {
+        const logDate = new Date(log.timestamp)
+        if (isNaN(logDate.getTime())) return false
+        return logDate >= fromDate && logDate <= toDate
+      } catch (error) {
+        console.error('Error filtering session log:', error)
+        return false
+      }
+    })
+
+    const filteredDeviceLogs = processedDeviceLogs.filter(log => {
+      try {
+        const logDate = new Date(log.timestamp)
+        if (isNaN(logDate.getTime())) return false
+        return logDate >= fromDate && logDate <= toDate
+      } catch (error) {
+        console.error('Error filtering device log:', error)
+        return false
+      }
+    })
+
+    console.log('Filtered logs counts:', {
+      loginLogs: filteredLoginLogs.length,
+      snacksSalesLogs: filteredSnacksSalesLogs.length,
+      snacksMaintenanceLogs: filteredSnacksMaintenanceLogs.length,
+      sessionLogs: filteredSessionLogs.length,
+      deviceLogs: filteredDeviceLogs.length
     })
 
     // Update the filtered logs state
@@ -370,14 +379,15 @@ export default function LogsPage() {
       loginLogs: filteredLoginLogs,
       snacksSalesLogs: filteredSnacksSalesLogs,
       snacksMaintenanceLogs: filteredSnacksMaintenanceLogs,
-      sessionLogs: filteredSessionLogs
+      sessionLogs: filteredSessionLogs,
+      deviceLogs: filteredDeviceLogs
     })
-  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs, filters.dateRange, loginLogsLoading, snacksLogsLoading, inventoryLogsLoading, sessionLogsLoading])
+  }, [loginLogs, sessionSnacksLogs, snacksLogs, sessionLogs, deviceLogs, filters.dateRange, loginLogsLoading, snacksLogsLoading, inventoryLogsLoading, sessionLogsLoading, deviceLogsLoading])
 
   return (
     <div className="p-6 space-y-6 bg-gradient-to-b from-background to-background/80 min-h-screen">
       {/* Header */}
-      <LogsHeader onRefresh={handleRefresh} onExport={handleExport} handleDateFilterChange={handleFilterChange} />
+      <LogsHeader onRefresh={handleRefresh} handleDateFilterChange={handleFilterChange} />
 
       {/* Stats Overview */}
       <LogsStats stats={statsData} />
@@ -391,6 +401,7 @@ export default function LogsPage() {
         snacksSalesLogs={filteredLogs.snacksSalesLogs}
         snacksMaintenanceLogs={filteredLogs.snacksMaintenanceLogs}
         sessionLogs={filteredLogs.sessionLogs}
+        deviceLogs={filteredLogs.deviceLogs}
       />
     </div>
   )

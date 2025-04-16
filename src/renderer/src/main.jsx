@@ -2,7 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './index.css'
-// import DashboardPage from './pages/(app)/dashboard/page'
 import LogsPage from './pages/(app)/logs/page'
 import InventoryPage from './pages/(app)/inventory/page'
 import HomePage from './pages/home/page'
@@ -32,6 +31,8 @@ import SessionBookingPage from './pages/session-booking/[deviceId]/page'
 import DeviceInfoPage from './pages/device-info/[deviceId]/page'
 import SessionSnacksPage from './pages/session-snacks/[sessionId]/page'
 import DashboardPage from './pages/(app)/dashboard/page'
+import UpdateStock from './pages/(app)/inventory/components/UpdateStock'
+import UpdateDeviceStatus from './pages/(app)/settings/station/components/UpdateDeviceStatus'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -261,10 +262,26 @@ createRoot(document.getElementById('root')).render(
           }
         />
         <Route
+          path='/device_update_dialog/:device_id'
+          element={
+            <ThemedLayout>
+              <UpdateDeviceStatus />
+            </ThemedLayout>
+          }
+        />
+        <Route
           path='/snack_edit_dialog/:snack_id'
           element={
             <ThemedLayout>
               <EditSnack />
+            </ThemedLayout>
+          }
+        />
+        <Route
+          path='/snack_update_dialog/:snack_id'
+          element={
+            <ThemedLayout>
+              <UpdateStock />
             </ThemedLayout>
           }
         />

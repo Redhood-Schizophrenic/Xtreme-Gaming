@@ -5,7 +5,7 @@ import { RefreshCw, BarChart } from "lucide-react"
 import { motion } from "framer-motion"
 import DateFilter from "../../dashboard/components/DateFilter"
 
-export default function LogsHeader({ onRefresh, onExport, handleDateFilterChange }) {
+export default function LogsHeader({ onRefresh, handleDateFilterChange }) {
   return (
     <motion.div
       className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6"

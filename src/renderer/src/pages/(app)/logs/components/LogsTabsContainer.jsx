@@ -1,13 +1,18 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@renderer/components/ui/tabs"
-import { UserCheck, ShoppingCart, Monitor, Package, ShoppingBag } from "lucide-react"
+import { UserCheck, ShoppingCart, Monitor, Package, HardDrive } from "lucide-react"
 import { motion } from "framer-motion"
-import LogsTable from "./LogsTable"
+import { default as LoginTable } from "./LoginTable.jsx"
+import { default as SnacksSalesTable } from "./SnacksSalesTable.jsx"
+import { default as SnacksMaintenanceTable } from "./SnacksMaintenanceTable.jsx"
+import { default as SessionTable } from "./SessionTable.jsx"
+import { default as DeviceLogsTable } from "./DeviceLogsTable.jsx"
 
 export default function LogsTabsContainer({
   loginLogs,
   snacksSalesLogs,
   snacksMaintenanceLogs,
-  sessionLogs
+  sessionLogs,
+  deviceLogs
 }) {
   return (
     <motion.div
@@ -16,7 +21,7 @@ export default function LogsTabsContainer({
       transition={{ duration: 0.3, delay: 0.4 }}
     >
       <Tabs defaultValue="login" className="space-y-6">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-5 w-full">
           <TabsTrigger value="login" className="flex items-center gap-2">
             <UserCheck className="h-4 w-4" />
             <span>Login Logs</span>
@@ -33,9 +38,15 @@ export default function LogsTabsContainer({
             <Monitor className="h-4 w-4" />
             <span>Session Logs</span>
           </TabsTrigger>
+          <TabsTrigger value="device" className="flex items-center gap-2">
+            <HardDrive className="h-4 w-4" />
+            <span>Device Logs</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="login" className="space-y-6">
+          <LoginTable data={loginLogs} />
+          {/*
           <LogsTable
             title="Login Logs"
             description="User login activity and authentication events"
@@ -44,39 +55,23 @@ export default function LogsTabsContainer({
             searchPlaceholder="Search by user..."
             exportFileName="LoginLogs.pdf"
           />
+          */}
         </TabsContent>
 
         <TabsContent value="snacksSales" className="space-y-6">
-          <LogsTable
-            title="Snacks Sales Logs"
-            description="Snack purchases by customers"
-            logs={snacksSalesLogs}
-            searchColumn="item"
-            searchPlaceholder="Search by item..."
-            exportFileName="SnacksSalesLogs.pdf"
-          />
+          <SnacksSalesTable data={snacksSalesLogs} />
         </TabsContent>
 
         <TabsContent value="snacksMaintenance" className="space-y-6">
-          <LogsTable
-            title="Snacks Inventory Logs"
-            description="Inventory maintenance, stock updates, and alerts"
-            logs={snacksMaintenanceLogs}
-            searchColumn="item"
-            searchPlaceholder="Search by item..."
-            exportFileName="SnacksInventoryLogs.pdf"
-          />
+          <SnacksMaintenanceTable data={snacksMaintenanceLogs} />
         </TabsContent>
 
         <TabsContent value="session" className="space-y-6">
-          <LogsTable
-            title="Session Logs"
-            description="Gaming session activity and billing events"
-            logs={sessionLogs}
-            searchColumn="user"
-            searchPlaceholder="Search by user..."
-            exportFileName="SessionLogs.pdf"
-          />
+          <SessionTable data={sessionLogs} />
+        </TabsContent>
+
+        <TabsContent value="device" className="space-y-6">
+          <DeviceLogsTable data={deviceLogs} />
         </TabsContent>
 
       </Tabs>

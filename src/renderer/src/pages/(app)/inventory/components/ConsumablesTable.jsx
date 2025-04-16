@@ -104,10 +104,14 @@ function ConsumablesTable({ data = [] }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={async () => {
-                  console.log(`snack_edit_dialog/${row.original.id}}`)
                   await window.api.customDialog(`snack_edit_dialog/${row.original.id}`)
                 }}
-              >Edit</DropdownMenuItem>
+              >Edit Info</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await window.api.customDialog(`snack_update_dialog/${row.original.id}`)
+                }}
+              >Update Stock</DropdownMenuItem>
               <DropdownMenuItem
                 className={'text-red-500'}
                 onClick={async () => {

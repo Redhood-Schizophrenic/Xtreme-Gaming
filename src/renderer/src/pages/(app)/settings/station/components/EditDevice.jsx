@@ -194,21 +194,6 @@ export default function EditDevice() {
             ))}
           </div>
         </div>
-        <div className="space-y-4">
-          <Label>Status</Label>
-          <Select
-            value={formData.status}
-            onValueChange={(value) => setFormData({ ...formData, status: value })}
-          >
-            <SelectTrigger className={'w-full'}>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='Available'>Available</SelectItem>
-              <SelectItem value='Occupied'>Occupied</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
         <div className="pt-2 w-full flex items-center gap-2">
           <Button
             variant={'secondary'}

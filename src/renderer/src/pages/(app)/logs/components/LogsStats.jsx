@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent } from "@renderer/components/ui/card"
-import { UserCheck, ShoppingCart, Monitor, Package, ShoppingBag } from "lucide-react"
+import { UserCheck, ShoppingCart, Monitor, Package, HardDrive } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function LogsStats({ stats }) {
@@ -33,6 +33,13 @@ export default function LogsStats({ stats }) {
       icon: Monitor,
       color: "bg-yellow-500/10 text-yellow-500",
       trend: stats.sessionLogsTrend || 0
+    },
+    {
+      title: "Device Logs",
+      value: stats.deviceLogs || 0,
+      icon: HardDrive,
+      color: "bg-red-500/10 text-red-500",
+      trend: stats.deviceLogsTrend || 0
     }
   ]
 
@@ -62,7 +69,7 @@ export default function LogsStats({ stats }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {statItems.map((stat, index) => {
           const trendIndicator = getTrendIndicator(stat.trend)
 
