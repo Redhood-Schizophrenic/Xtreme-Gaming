@@ -1,6 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@renderer/components/ui/card"
+import { Button } from "@renderer/components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@renderer/components/ui/table"
+import { Filter, Download } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@renderer/components/ui/select"
 import DateFilter from "../dashboard/components/DateFilter"
 import ActiveUsersCard from "./components/ActiveUsersCard"
 import PeakHoursChart from "./components/PeakHoursChart"
@@ -10,7 +15,7 @@ import TopSpendingUsers from "./components/TopSpendingUsers"
 import OfferPerformanceTable from "./components/OfferPerformanceTable"
 import { useCollection } from "@renderer/hooks/pbCollection"
 
-export default function ReportsPage() {
+export default function ReportsDashboardPage() {
   // State for date range filter
   const [dateRange, setDateRange] = useState(() => {
     // Initialize with today's date range
@@ -84,15 +89,20 @@ export default function ReportsPage() {
 
       <div className="grid gap-4 grid-cols-12">
         {/* Active Users Card */}
-        <div className="col-span-12 md:col-span-3">
+        <div className="col-span-3 flex flex-col gap-4">
           <ActiveUsersCard
             sessions={filteredData.sessions}
+            isLoading={isLoading}
+          />
+          <TopSpendingUsers
+            sessions={filteredData.sessions}
+            customers={customers}
             isLoading={isLoading}
           />
         </div>
 
         {/* Revenue Overview Chart */}
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-6">
           <RevenueOverviewChart
             sessions={filteredData.sessions}
             sessionSnacksLogs={filteredData.sessionSnacksLogs}
@@ -101,7 +111,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Today's Summary */}
-        <div className="col-span-12 md:col-span-3">
+        <div className="col-span-3">
           <TodaysSummary
             sessions={filteredData.sessions}
             sessionSnacksLogs={filteredData.sessionSnacksLogs}
@@ -110,21 +120,13 @@ export default function ReportsPage() {
         </div>
 
         {/* Peak Hours Chart */}
-        <div className="col-span-12 md:col-span-3">
+        <div className="col-span-12">
           <PeakHoursChart
             sessions={filteredData.sessions}
             isLoading={isLoading}
           />
         </div>
 
-        {/* Top Spending Users */}
-        <div className="col-span-12 md:col-span-9">
-          <TopSpendingUsers
-            sessions={filteredData.sessions}
-            customers={customers}
-            isLoading={isLoading}
-          />
-        </div>
 
         {/* Offer Performance Table */}
         <div className="col-span-12">

@@ -4,10 +4,14 @@ import { useLocation, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { navLinks } from '../../lib/data/Navbar';
 import TimeComponent from './Timer';
+import { Button } from '../ui/button';
+import { Receipt } from 'lucide-react';
+import { usePaymentsStore } from '../../stores/paymentsStore';
 
 export default function AppHeader() {
   const [currentNav, setcurrentNav] = useState('');
   const location = useLocation(); // Use the location object from react-router-dom
+  const { togglePaymentsSheet, pendingPayments } = usePaymentsStore();
 
   useEffect(() => {
     if (navLinks) {
@@ -53,7 +57,21 @@ export default function AppHeader() {
           </div>
 
           {/* Right Container */}
-          <div className='flex items-center'>
+          <div className='flex items-center gap-2'>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={togglePaymentsSheet}
+            >
+              <Receipt className="h-4 w-4" />
+              Payments
+              {pendingPayments.length > 0 && (
+                <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                  {pendingPayments.length}
+                </span>
+              )}
+            </Button>
             <ProfileIcon />
             <ModeToggle />
             <TimeComponent />

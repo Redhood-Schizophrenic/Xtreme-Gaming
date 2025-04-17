@@ -12,6 +12,8 @@ export default function TodaysSummary({ sessions, sessionSnacksLogs, isLoading }
         totalRevenue: 0,
         activeSessions: 0,
         newUsers: 0,
+        sessionRevenue: 0,
+        snacksRevenue: 0,
         avgSessionTime: '0h 0m'
       }
     }
@@ -63,6 +65,8 @@ export default function TodaysSummary({ sessions, sessionSnacksLogs, isLoading }
 
     return {
       totalRevenue,
+      sessionRevenue,
+      snacksRevenue,
       activeSessions,
       newUsers,
       avgSessionTime
@@ -103,6 +107,14 @@ export default function TodaysSummary({ sessions, sessionSnacksLogs, isLoading }
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Avg Session Time</span>
           <span className="font-medium">{summaryStats.avgSessionTime}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Snacks Revenue</span>
+          <span className="font-medium">₹{summaryStats.sessionRevenue.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Session Revenue</span>
+          <span className="font-medium">₹{summaryStats.snacksRevenue.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>

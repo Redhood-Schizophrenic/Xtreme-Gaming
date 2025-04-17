@@ -3,6 +3,7 @@ import AppHeader from "@renderer/components/layout/Header";
 import { Toaster } from "@renderer/components/ui/sonner";
 import { ProtectedRoute } from "./lib/utils/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
+import PendingPaymentsSheet from "./components/PendingPaymentsSheet";
 
 export default function MainRootLayout({ children }) {
   return (
@@ -17,6 +18,7 @@ export default function MainRootLayout({ children }) {
           <main className="w-full">
             <AppHeader />
             {children}
+            <PendingPaymentsSheet />
             <Toaster richColors />
           </main>
         </ThemeProvider>

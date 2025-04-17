@@ -32,7 +32,7 @@ export default function ActiveUsersCard({ sessions, isLoading }) {
 
   if (isLoading) {
     return (
-      <Card className="h-full bg-card text-card-foreground">
+      <Card className="h-auto bg-card text-card-foreground">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">Active Users</CardTitle>
         </CardHeader>
@@ -44,7 +44,7 @@ export default function ActiveUsersCard({ sessions, isLoading }) {
   }
 
   return (
-    <Card className="h-full bg-card text-card-foreground">
+    <Card className="h-auto bg-card text-card-foreground">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">Active Users</CardTitle>
       </CardHeader>

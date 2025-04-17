@@ -172,7 +172,7 @@ export default function RevenueOverviewChart({ sessions, sessionSnacksLogs, isLo
         <CardTitle className="text-sm font-medium">Revenue Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={150}>
+        <ResponsiveContainer width="100%" height={250}>
           <AreaChart
             data={revenueData[timeframe]}
             margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
